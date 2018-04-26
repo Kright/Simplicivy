@@ -11,7 +11,7 @@ This is in a very-very early development now. There is nothing to play yet.
 
 ### Development
 
-Project uses technologies: libgdx + scala
+Project uses libgdx + scala
 
 main code placed in ```core``` module
 
