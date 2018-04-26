@@ -3,15 +3,9 @@ package com.github.kright.worldmodel
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait MapCell extends MapPosition with LandModifiers{
+trait MapCell extends MapPosition with LandModifiers {
 
   def visibility: CellVisibility
-
-  def terrain: TerrainType
-
-  def settlement: Option[Settlement]
-
-  def resource: Option[Resource]
 
   def units: Seq[Unit]
 
@@ -23,10 +17,17 @@ trait MapCell extends MapPosition with LandModifiers{
   def getShadowed(): MapCell
 }
 
+
 trait LandModifiers {
+  def terrain: TerrainType
+
+  def resource: Option[Resource]
+
   def road: RoadType
 
   def landUpgrade: Option[LandUpgrade]
 
   def hasPollution: Boolean
+
+  def settlement: Option[Settlement]
 }
