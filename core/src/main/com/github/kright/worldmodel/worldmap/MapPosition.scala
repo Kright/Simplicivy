@@ -14,7 +14,7 @@ trait MapPosition extends Position {
   def y: Int
 
   /* position always valid */
-  override def isMapPosition(implicit topology: MapTopology): Boolean = true
+  override def isValid(implicit topology: MapTopology): Boolean = true
 
   /* return itself */
   override def asMapPosition(implicit topology: MapTopology): MapPosition = this
@@ -27,10 +27,10 @@ trait Position {
 
   def y: Int
 
-  def isMapPosition(implicit topology: MapTopology): Boolean = topology.isValid(this)
+  def isValid(implicit topology: MapTopology): Boolean = topology.isValid(this)
 
   def asMapPosition(implicit topology: MapTopology): MapPosition = {
-    assert(isMapPosition)
+    assert(isValid)
     new MapPositionImpl(topology.wrappedX(this), topology.wrappedY(this))
   }
 }
