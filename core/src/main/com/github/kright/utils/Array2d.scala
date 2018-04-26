@@ -4,7 +4,11 @@ import scala.collection.mutable.ArrayBuffer
 
 class Array2d[T](val width: Int, val height: Int) {
 
-  private var array = new ArrayBuffer[T](width * height)
+  val array = new ArrayBuffer[T](width * height)
+
+  for (_ <- 0 until width * height) {
+    array += null.asInstanceOf[T]
+  }
 
   @inline
   private def check(x: Int, y: Int): Unit = {

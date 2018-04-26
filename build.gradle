@@ -17,6 +17,8 @@ allprojects {
         appName = "Simplicivy"
         gdxVersion = '1.9.8'
         scalaVersion = '2.11.12'
+        scalatestVersion = '2.11:3.0.5'
+        junitVersion = '4.12'
     }
 
     repositories {
@@ -29,7 +31,6 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "java"
-
 
     dependencies {
         compile project(":core")
@@ -69,5 +70,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 
         compile "org.scala-lang:scala-library:$scalaVersion"
+        testCompile "org.scalatest:scalatest_$scalatestVersion"
+        testCompile "junit:junit:$junitVersion"
     }
 }
