@@ -1,5 +1,7 @@
 package com.github.kright.worldmodel
 
+import com.github.kright.worldmodel.units.GameUnit
+
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -14,7 +16,7 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   var resource: Option[Resource] = None
 
-  val units: ArrayBuffer[Unit] = new ArrayBuffer[Unit]()
+  val units: ArrayBuffer[GameUnit] = new ArrayBuffer[GameUnit]()
 
   var owner: Option[Country] = None
 
@@ -45,7 +47,7 @@ class ShadowedMapCell private(val x: Int, val y: Int,
 
   override def visibility: CellVisibility = Shadowed
 
-  override def units: Seq[Unit] = List.empty
+  override def units: Seq[GameUnit] = List.empty
 
   /**
     * @return if shadowed return self else make shadowed copy
@@ -67,7 +69,7 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def resource: Option[Resource] = throwException
 
-  override def units: Seq[Unit] = throwException
+  override def units: Seq[GameUnit] = throwException
 
   override def owner: Option[Country] = throwException
 

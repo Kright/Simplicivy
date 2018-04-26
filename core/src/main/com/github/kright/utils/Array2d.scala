@@ -22,7 +22,9 @@ class Array2d[T](val width: Int, val height: Int) {
     x + width * y
   }
 
+  @inline
   def apply(x: Int, y: Int): T = array(pos(x, y))
 
+  @inline
   def update(x: Int, y: Int, value: T): Unit = array(pos(x, y)) = value
 }

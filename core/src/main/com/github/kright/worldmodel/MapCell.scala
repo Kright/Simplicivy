@@ -1,5 +1,6 @@
 package com.github.kright.worldmodel
 
+import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
@@ -9,7 +10,7 @@ trait MapCell extends MapPosition with LandModifiers {
 
   def visibility: CellVisibility
 
-  def units: Seq[Unit]
+  def units: Seq[GameUnit]
 
   def owner: Option[Country]
 
