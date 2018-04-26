@@ -5,7 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-class MapCellImpl(val x: Int, val y: Int) extends MapCell {
+class MutableMapCell(val x: Int, val y: Int) extends MapCell {
   override def visibility: CellVisibility = Visible
 
   var terrain: TerrainType = _
