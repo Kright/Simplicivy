@@ -20,6 +20,10 @@ trait ObjectOwner[T <: HasId] {
   def apply(id: Int): T
 
   def apply(i: T): T = apply(i.id)
+
+  def contains(id: Int): Boolean
+
+  def contains(i: T): Boolean = contains(i.id)
 }
 
 
@@ -35,5 +39,10 @@ class SimpleObjectOwner[T <: HasId] extends ObjectOwner[T] {
 
   override def apply(id: Int): T = hashMap(id)
 
-  def add(t: T): Unit = hashMap(t.id) = t
+  def add(t: T): Unit = {
+    assert(!contains(t))
+    hashMap(t.id) = t
+  }
+
+  override def contains(id: Int): Boolean = hashMap.contains(id)
 }

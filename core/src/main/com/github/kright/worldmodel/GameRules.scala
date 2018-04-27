@@ -8,7 +8,7 @@ import com.github.kright.worldmodel.units.GameUnitType
 /**
   * Created by Igor Slobodskov on 27 April 2018
   *
-  * effectively persistent structure about map rules
+  * effectively persistent structure about game rules
   * technologies tree, city buildings, unit types.
   *
   */
@@ -20,6 +20,7 @@ trait GameRules {
 
   def unitTypes: ObjectOwner[GameUnitType]
 }
+
 
 class GameRulesImpl(val allTechnologies: ObjectOwner[TechnologyDescription],
                     val cityBuildings: ObjectOwner[CityBuilding],
