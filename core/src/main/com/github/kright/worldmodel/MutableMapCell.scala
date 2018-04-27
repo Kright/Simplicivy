@@ -2,6 +2,7 @@ package com.github.kright.worldmodel
 
 import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.city.City
+import com.github.kright.worldmodel.country.CountryLink
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -19,7 +20,7 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   val units: ArrayBuffer[GameUnit] = new ArrayBuffer[GameUnit]()
 
-  var owner: Option[Country] = None
+  var owner: Option[CountryLink] = None
 
   /**
     * @return if shadowed return self else make shadowed copy
@@ -38,7 +39,7 @@ class ShadowedMapCell private(val x: Int, val y: Int,
                               val terrain: TerrainType,
                               val city: Option[City],
                               val resource: Option[Resource],
-                              val owner: Option[Country],
+                              val owner: Option[CountryLink],
                               val road: RoadType,
                               val landUpgrade: Option[LandUpgrade],
                               val hasPollution: Boolean) extends MapCell {
@@ -72,7 +73,7 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def units: Seq[GameUnit] = throwException
 
-  override def owner: Option[Country] = throwException
+  override def owner: Option[CountryLink] = throwException
 
   /**
     * @return if shadowed return self else make shadowed copy

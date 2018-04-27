@@ -3,6 +3,7 @@ package com.github.kright.worldmodel
 import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.worldmap.MapPosition
 import com.github.kright.worldmodel.city.City
+import com.github.kright.worldmodel.country.CountryLink
 
 
 /**
@@ -14,7 +15,7 @@ trait MapCell extends MapPosition with LandModifiers {
 
   def units: Seq[GameUnit]
 
-  def owner: Option[Country]
+  def owner: Option[CountryLink]
 
   /**
     * @return if shadowed return self else make shadowed copy

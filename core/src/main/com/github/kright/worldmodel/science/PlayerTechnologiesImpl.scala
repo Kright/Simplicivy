@@ -1,6 +1,6 @@
 package com.github.kright.worldmodel.science
 
-import com.github.kright.worldmodel.GameRules
+import com.github.kright.worldmodel.gamerules.GameRules
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -8,22 +8,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait PlayerTechnologies {
-
-  def all: Iterable[TechnologyDescription]
-
-  /* technology must be available */
-  def research(newTech: TechnologyDescription)
-
-  def available: Seq[TechnologyDescription]
-
-  def researched: Seq[TechnologyDescription]
-
-  def isResearched(tech: TechnologyDescription): Boolean
-}
-
-
-class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends PlayerTechnologies {
+private class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends PlayerTechnologies {
   private val researchedList = new ArrayBuffer[TechnologyDescription]()
   private val researchedSet = new mutable.HashSet[TechnologyDescription]()
 
@@ -31,7 +16,7 @@ class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends PlayerTechno
 
   private def computeAvailable() = all.view.filter(_.isAvailable).toBuffer
 
-  override def research(newTech: TechnologyDescription): Unit = {
+  def research(newTech: TechnologyDescription): Unit = {
     assert(!newTech.isResearched)
     assert(newTech.requiredTechnologies.forall(isResearched))
     researchedSet += newTech

@@ -1,6 +1,6 @@
 package com.github.kright.worldmodel.units
 
-import com.github.kright.worldmodel.Country
+import com.github.kright.worldmodel.country.CountryLink
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
@@ -26,5 +26,5 @@ trait GameUnit extends MapPosition {
 
   def unitType: GameUnitType
 
-  def owner: Country
+  def owner: CountryLink
 }
