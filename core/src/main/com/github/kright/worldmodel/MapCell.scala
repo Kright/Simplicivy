@@ -2,6 +2,8 @@ package com.github.kright.worldmodel
 
 import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.worldmap.MapPosition
+import com.github.kright.worldmodel.city.City
+
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
@@ -32,5 +34,5 @@ trait LandModifiers {
 
   def hasPollution: Boolean
 
-  def settlement: Option[Settlement]
+  def city: Option[City]
 }

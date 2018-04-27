@@ -1,6 +1,7 @@
 package com.github.kright.worldmodel
 
 import com.github.kright.worldmodel.units.GameUnit
+import com.github.kright.worldmodel.city.City
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -12,7 +13,7 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   var terrain: TerrainType = _
 
-  var settlement: Option[Settlement] = None
+  var city: Option[City] = None
 
   var resource: Option[Resource] = None
 
@@ -35,14 +36,14 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
 class ShadowedMapCell private(val x: Int, val y: Int,
                               val terrain: TerrainType,
-                              val settlement: Option[Settlement],
+                              val city: Option[City],
                               val resource: Option[Resource],
                               val owner: Option[Country],
                               val road: RoadType,
                               val landUpgrade: Option[LandUpgrade],
                               val hasPollution: Boolean) extends MapCell {
 
-  def this(c: MapCell) = this(c.x, c.y, c.terrain, c.settlement, c.resource, c.owner, c.road,
+  def this(c: MapCell) = this(c.x, c.y, c.terrain, c.city, c.resource, c.owner, c.road,
     c.landUpgrade, c.hasPollution)
 
   override def visibility: CellVisibility = Shadowed
@@ -65,7 +66,7 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def terrain: TerrainType = throwException
 
-  override def settlement: Option[Settlement] = throwException
+  override def city: Option[City] = throwException
 
   override def resource: Option[Resource] = throwException
 
