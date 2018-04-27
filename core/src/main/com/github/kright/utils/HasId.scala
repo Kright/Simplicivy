@@ -15,6 +15,8 @@ trait HasId {
 
 trait ObjectOwner[T <: HasId] {
 
+  def all: Iterable[T]
+
   def apply(id: Int): T
 
   def apply(i: T): T = apply(i.id)
@@ -23,9 +25,15 @@ trait ObjectOwner[T <: HasId] {
 
 class SimpleObjectOwner[T <: HasId] extends ObjectOwner[T] {
 
-  val values = new mutable.HashMap[Int, T]()
+  def this(objects: Seq[T]) = this() {
+    objects.foreach(add)
+  }
 
-  def add(t: T): Unit = values(t.id) = t
+  val hashMap = new mutable.HashMap[Int, T]()
 
-  override def apply(id: Int): T = values(id)
+  override def all: Iterable[T] = hashMap.values
+
+  override def apply(id: Int): T = hashMap(id)
+
+  def add(t: T): Unit = hashMap(t.id) = t
 }
