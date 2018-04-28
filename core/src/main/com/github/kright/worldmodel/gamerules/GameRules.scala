@@ -32,4 +32,7 @@ trait GameRules {
 
   // uses tech, resources, cityBuildingTypes, and itself
   def unitTypes: ObjectOwner[GameUnitType]
+
+  // uses techs, unitTypes, cityBuildings
+  def nations: Seq[Nation]
 }
