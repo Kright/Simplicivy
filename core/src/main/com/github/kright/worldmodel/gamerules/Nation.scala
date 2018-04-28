@@ -38,6 +38,8 @@ trait NationFeatures {
   def military: Boolean
 
   def scientific: Boolean
+
+  def cultural: Boolean
 }
 
 class Modification[T](val remove: Set[T],
