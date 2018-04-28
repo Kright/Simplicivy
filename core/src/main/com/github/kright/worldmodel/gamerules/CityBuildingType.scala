@@ -11,7 +11,29 @@ trait CityBuildingType extends HasId {
 
   def cost: Int = requires.cost
 
+
+  def buildingEffect: BuildingEffect
+}
+
+trait BuildingEffect {
+
   def maintenance: Int
 
-  //todo positive effects
+  def happines: Int
+
+  def culture: Int
+
+
+  def taxBonus: Int
+
+  def researchBonus: Int
+
+  def productionBonus: Int
+
+  def defenceBonus: Int
+
+  def corruptionDecrease: Int
+
+
+  def pollution: Int
 }
