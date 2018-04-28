@@ -13,15 +13,5 @@ trait TerrainType extends HasId {
 
   def defenceBonus: Int
 
-  def produces: Production
-}
-
-
-trait Production {
-
-  def food: Int
-
-  def production: Int
-
-  def gold: Int
+  def produces: CellProduction
 }
