@@ -2,6 +2,8 @@ package com.github.kright.worldmodel.gamerules
 
 import com.github.kright.utils.HasId
 
+import scala.collection.mutable
+
 /**
   * Created by Igor Slobodskov on 29 April 2018
   */
@@ -14,10 +16,11 @@ trait Nation extends HasId {
 
   def startingTechs: Seq[TechnologyDescription]
 
-  def extraGameUnits: Seq[GameUnitType]
+  def extraGameUnits: Modification[GameUnitType]
 
-  def extraBuildings: Seq[CityBuildingType]
+  def extraBuildings: Modification[CityBuildingType]
 }
+
 
 trait NationFeatures {
   def moreFood: Boolean
@@ -36,3 +39,8 @@ trait NationFeatures {
 
   def scientific: Boolean
 }
+
+class Modification[T](val remove: Set[T],
+                      val swap: Map[T, T],
+                      val add: Seq[T])
+
