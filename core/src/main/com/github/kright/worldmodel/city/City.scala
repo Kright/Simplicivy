@@ -1,6 +1,7 @@
 package com.github.kright.worldmodel.city
 
 import com.github.kright.worldmodel.country.CountryLink
+import com.github.kright.worldmodel.gamerules.Production
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
@@ -15,4 +16,6 @@ trait City extends MapPosition {
   def owner: CountryLink
 
   def buildings: Seq[CityBuilding]
+
+  def production: Production
 }

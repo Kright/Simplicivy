@@ -13,11 +13,11 @@ trait TerrainType extends HasId {
 
   def defenceBonus: Int
 
-  def produces: TerrainProduction
+  def produces: Production
 }
 
 
-trait TerrainProduction {
+trait Production {
 
   def food: Int
 
