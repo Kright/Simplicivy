@@ -34,6 +34,8 @@ trait GameUnitType extends HasId {
 
   def cost: Int
 
+  def maintenanceCost: Int
+
   // fields with links to other GameRulesContent
 
   /** build roads, landUpgrades, cities, destroy them */
@@ -44,7 +46,6 @@ trait GameUnitType extends HasId {
   def upgradesTo: Seq[GameUnitType]
 }
 
-//todo add cost of unit maintenance
 
 class GameUnitLevel(val requiredExperience: Int, val maxHitPoints: Int)
 
