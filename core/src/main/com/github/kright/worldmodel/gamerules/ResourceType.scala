@@ -5,9 +5,9 @@ import com.github.kright.utils.HasId
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait Resource extends HasId {
+trait ResourceType extends HasId {
 
-  def resourceType: ResourceType
+  def resourceType: ResourceKind
 
   def requiredTerrain: Set[TerrainType]
 
@@ -16,8 +16,8 @@ trait Resource extends HasId {
   def cellBonus: CellProduction
 }
 
-sealed trait ResourceType
+sealed trait ResourceKind
 
-case object BonusResource extends ResourceType
+case object BonusResource extends ResourceKind
 
-case object StrategicResource extends ResourceType
+case object StrategicResource extends ResourceKind

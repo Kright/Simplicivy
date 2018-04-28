@@ -1,7 +1,6 @@
 package com.github.kright.worldmodel.gamerules
 
 import com.github.kright.utils.HasId
-import com.github.kright.worldmodel.city.CityBuilding
 import com.github.kright.worldmodel.science.PlayerTechnologies
 
 /**
@@ -11,12 +10,6 @@ trait TechnologyDescription extends HasId {
   def scienceCost: Int
 
   def requiredTechnologies: Seq[TechnologyDescription]
-
-  def units: Seq[GameUnitType]
-
-  def buildings: Seq[CityBuilding]
-
-  def landUpgrades: Seq[LandUpgradeType]
 
 
   @inline

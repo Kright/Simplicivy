@@ -6,5 +6,5 @@ package com.github.kright.worldmodel.gamerules
 
 class RequirementForCityProduction(val cost: Int,
                                    val technology: Option[TechnologyDescription],
-                                   val resources: Seq[Resource],
+                                   val resources: Seq[ResourceType],
                                    val cityBuildings: Seq[CityBuildingType])

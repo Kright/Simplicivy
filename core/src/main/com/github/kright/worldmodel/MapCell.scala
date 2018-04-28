@@ -4,7 +4,7 @@ import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.worldmap.MapPosition
 import com.github.kright.worldmodel.city.City
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.{LandUpgradeType, Resource, RoadType, TerrainType}
+import com.github.kright.worldmodel.gamerules.{LandUpgradeType, ResourceType, RoadType, TerrainType}
 
 
 /**
@@ -28,7 +28,7 @@ trait MapCell extends MapPosition with LandModifiers {
 trait LandModifiers {
   def terrain: TerrainType
 
-  def resource: Option[Resource]
+  def resource: Option[ResourceType]
 
   def road: RoadType
 

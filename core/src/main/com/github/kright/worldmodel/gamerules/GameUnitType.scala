@@ -7,6 +7,8 @@ import com.github.kright.utils.HasId
   */
 trait GameUnitType extends HasId {
 
+  // simple fields
+
   def movingOn: MovingEnvironment
 
   def isMilitary: Boolean
@@ -25,15 +27,17 @@ trait GameUnitType extends HasId {
 
   def antiAirDefence: Option[AntiAirDefence]
 
-  // build roads, landUpgrades, cities, destroy them
-  def possibleActions: Seq[GameUnitActionType]
-
   def visibilityModel: VisibilityModel
 
   /* ability to carry units */
   def maxCarriedUnits: Int
 
   def cost: Int
+
+  // fields with links to other GameRulesContent
+
+  /** build roads, landUpgrades, cities, destroy them */
+  def possibleActions: Seq[GameUnitActionType]
 
   def requirements: RequirementForCityProduction
 

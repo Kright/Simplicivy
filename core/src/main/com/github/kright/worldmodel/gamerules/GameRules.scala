@@ -15,15 +15,21 @@ import com.github.kright.utils.ObjectOwner
   */
 trait GameRules {
 
-  def resources: Seq[Resource]
+  // pure classes, don't hold links to other structures
 
   def technologies: ObjectOwner[TechnologyDescription]
 
-  def cityBuildings: ObjectOwner[CityBuildingType]
-
-  def unitTypes: ObjectOwner[GameUnitType]
-
   def terrainTypes: ObjectOwner[TerrainType]
 
+  // uses techs and terrain types
+  def resources: Seq[ResourceType]
+
+  // uses someself, resources and technologies
+  def cityBuildings: ObjectOwner[CityBuildingType]
+
+  // uses terrain types
   def langUpgradeTypes: ObjectOwner[LandUpgradeType]
+
+  // uses tech, resources, cityBuildingTypes, and itself
+  def unitTypes: ObjectOwner[GameUnitType]
 }

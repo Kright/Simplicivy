@@ -8,4 +8,12 @@ import com.github.kright.utils.HasId
 trait LandUpgradeType extends HasId {
 
   def possibleTerrain: Set[TerrainType]
+
+  def resources: ResourcesRequirement
 }
+
+sealed trait ResourcesRequirement
+
+case object AllowAll extends ResourcesRequirement
+
+case class ResourcesInList(permittedResources: Set[ResourceType]) extends ResourcesRequirement

@@ -17,7 +17,7 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   var city: Option[City] = None
 
-  var resource: Option[Resource] = None
+  var resource: Option[ResourceType] = None
 
   val units: ArrayBuffer[GameUnit] = new ArrayBuffer[GameUnit]()
 
@@ -39,7 +39,7 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 class ShadowedMapCell private(val x: Int, val y: Int,
                               val terrain: TerrainType,
                               val city: Option[City],
-                              val resource: Option[Resource],
+                              val resource: Option[ResourceType],
                               val owner: Option[CountryLink],
                               val road: RoadType,
                               val landUpgrade: Option[LandUpgradeType],
@@ -70,7 +70,7 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def city: Option[City] = throwException
 
-  override def resource: Option[Resource] = throwException
+  override def resource: Option[ResourceType] = throwException
 
   override def units: Seq[GameUnit] = throwException
 
