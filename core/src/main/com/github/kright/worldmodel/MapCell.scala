@@ -4,6 +4,7 @@ import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.worldmap.MapPosition
 import com.github.kright.worldmodel.city.City
 import com.github.kright.worldmodel.country.CountryLink
+import com.github.kright.worldmodel.gamerules.{Resource, RoadType, TerrainType}
 
 
 /**

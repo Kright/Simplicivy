@@ -1,4 +1,7 @@
-package com.github.kright.worldmodel.units
+package com.github.kright.worldmodel.gamerules
+
+import com.github.kright.utils.HasId
+import javax.annotation.Resources
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
@@ -11,17 +14,13 @@ package com.github.kright.worldmodel.units
   * overland and ship units in addition might fire to several distance
   * some of them (cannons) can't fight in closer fight
   */
-trait GameUnitType {
+trait GameUnitType extends HasId{
 
-  def name: String
+  def isMilitary: Boolean
 
-  def military: Boolean
+  def cost: Int
 
-
-  def movementPoints: Int
-
-  def attackPoints: Int
-
+  def moves: Int
 
   def attack: Int
 
@@ -30,4 +29,8 @@ trait GameUnitType {
   def rangedAttack: Int
 
   def rangedAttackRange: Int
+
+  def requirements: Requirements
+
+  def upgradesTo: Seq[GameUnitType]
 }

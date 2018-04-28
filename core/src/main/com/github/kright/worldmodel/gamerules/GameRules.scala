@@ -1,9 +1,6 @@
 package com.github.kright.worldmodel.gamerules
 
-import com.github.kright.utils.{ObjectOwner, SimpleObjectOwner}
-import com.github.kright.worldmodel.city.CityBuilding
-import com.github.kright.worldmodel.science.TechnologyDescription
-import com.github.kright.worldmodel.units.GameUnitType
+import com.github.kright.utils.ObjectOwner
 
 /**
   * Created by Igor Slobodskov on 27 April 2018
@@ -14,9 +11,15 @@ import com.github.kright.worldmodel.units.GameUnitType
   */
 trait GameRules {
 
-  def allTechnologies: ObjectOwner[TechnologyDescription]
+  def resources: Seq[Resource]
 
-  def cityBuildings: ObjectOwner[CityBuilding]
+  def technologies: ObjectOwner[TechnologyDescription]
+
+  def cityBuildings: ObjectOwner[CityBuildingType]
 
   def unitTypes: ObjectOwner[GameUnitType]
+
+  def terrainTypes: ObjectOwner[TerrainType]
+
+  def roadTypes: Seq[RoadType] = Seq(NoRoad, Road, Railroad)
 }

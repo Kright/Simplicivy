@@ -1,6 +1,6 @@
 package com.github.kright.worldmodel.units
 
-import com.github.kright.worldmodel.{RoadType, TerrainType}
+import com.github.kright.worldmodel.gamerules.{RoadType, TerrainType}
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**

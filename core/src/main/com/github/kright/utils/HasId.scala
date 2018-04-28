@@ -29,7 +29,8 @@ trait ObjectOwner[T <: HasId] {
 
 class SimpleObjectOwner[T <: HasId] extends ObjectOwner[T] {
 
-  def this(objects: Seq[T]) = this() {
+  def this(objects: Seq[T]) {
+    this()
     objects.foreach(add)
   }
 

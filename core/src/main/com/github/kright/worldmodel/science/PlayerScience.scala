@@ -1,14 +1,10 @@
 package com.github.kright.worldmodel.science
 
+import com.github.kright.worldmodel.gamerules.TechnologyDescription
+
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait ResearchProgress {
-  def tech: TechnologyDescription
-
-  def currentResearchPoints: Int
-}
-
 trait PlayerScience extends PlayerTechnologies {
 
   /**
@@ -39,4 +35,11 @@ trait PlayerTechnologies {
   def researched: Seq[TechnologyDescription]
 
   def isResearched(tech: TechnologyDescription): Boolean
+}
+
+
+trait ResearchProgress {
+  def tech: TechnologyDescription
+
+  def progress: Int
 }

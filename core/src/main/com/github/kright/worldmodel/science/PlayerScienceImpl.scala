@@ -1,6 +1,6 @@
 package com.github.kright.worldmodel.science
 
-import com.github.kright.worldmodel.gamerules.GameRules
+import com.github.kright.worldmodel.gamerules.{GameRules, TechnologyDescription}
 
 import scala.collection.mutable
 
@@ -19,7 +19,7 @@ class PlayerScienceImpl(implicit gameRules: GameRules) extends PlayerScience {
     if (freeSciencePoints == 0)
       return false
 
-    val newPoints = researchNow.currentResearchPoints + freeSciencePoints
+    val newPoints = researchNow.progress + freeSciencePoints
 
     if (newPoints >= researchNow.tech.scienceCost) {
       freeSciencePoints = newPoints - researchNow.tech.scienceCost
@@ -58,9 +58,9 @@ class PlayerScienceImpl(implicit gameRules: GameRules) extends PlayerScience {
 
   override def researched: Seq[TechnologyDescription] = tech.researched
 
-  override def isResearched(tech: TechnologyDescription): Boolean = tech.isResearched
+  override def isResearched(t: TechnologyDescription): Boolean = t.isResearched(tech)
 }
 
-private class Progress(tech: TechnologyDescription) extends ResearchProgress {
+private class Progress(val tech: TechnologyDescription) extends ResearchProgress {
   var progress: Int = 0
 }

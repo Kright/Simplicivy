@@ -3,6 +3,7 @@ package com.github.kright.worldmodel
 import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.city.City
 import com.github.kright.worldmodel.country.CountryLink
+import com.github.kright.worldmodel.gamerules.{NoRoad, Resource, RoadType, TerrainType}
 
 import scala.collection.mutable.ArrayBuffer
 

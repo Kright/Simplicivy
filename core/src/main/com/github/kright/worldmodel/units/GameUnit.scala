@@ -1,6 +1,7 @@
 package com.github.kright.worldmodel.units
 
 import com.github.kright.worldmodel.country.CountryLink
+import com.github.kright.worldmodel.gamerules.GameUnitType
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
