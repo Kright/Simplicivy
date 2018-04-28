@@ -7,7 +7,17 @@ import com.github.kright.utils.HasId
   */
 trait TerrainType extends HasId {
 
-  def land: Boolean
+  def isLand: Boolean
+
+  @inline
+  def isWater: Boolean = !isLand
+
+  /**
+    * will be used for visibility calculations
+    * 0 for water, 1 for land, 2 for hills, 3 for mountains
+    * When you stay on mountain above plain land, you can see farther
+    */
+  def height: Int
 
   def movementCost: Int
 
