@@ -1,0 +1,10 @@
+package com.github.kright.worldmodel.gamerules
+
+/**
+  * Created by Igor Slobodskov on 28 April 2018
+  */
+
+class RequirementForCityProduction(val cost: Int,
+                                   val technology: Option[TechnologyDescription],
+                                   val resources: Seq[Resource],
+                                   val cityBuildings: Seq[CityBuildingType])

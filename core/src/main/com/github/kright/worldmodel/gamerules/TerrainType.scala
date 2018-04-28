@@ -13,10 +13,7 @@ trait TerrainType extends HasId {
 
   def defenceBonus: Int
 
-
   def produces: TerrainProduction
-
-  //todo add terraforming rules like grass -> forest
 }
 
 

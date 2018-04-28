@@ -4,7 +4,7 @@ import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.worldmap.MapPosition
 import com.github.kright.worldmodel.city.City
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.{Resource, RoadType, TerrainType}
+import com.github.kright.worldmodel.gamerules.{LandUpgradeType, Resource, RoadType, TerrainType}
 
 
 /**
@@ -32,7 +32,7 @@ trait LandModifiers {
 
   def road: RoadType
 
-  def landUpgrade: Option[LandUpgrade]
+  def landUpgrade: Option[LandUpgradeType]
 
   def hasPollution: Boolean
 

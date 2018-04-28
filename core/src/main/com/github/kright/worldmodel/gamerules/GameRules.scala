@@ -21,5 +21,5 @@ trait GameRules {
 
   def terrainTypes: ObjectOwner[TerrainType]
 
-  def roadTypes: Seq[RoadType] = Seq(NoRoad, Road, Railroad)
+  def langUpgradeTypes: ObjectOwner[LandUpgradeType]
 }

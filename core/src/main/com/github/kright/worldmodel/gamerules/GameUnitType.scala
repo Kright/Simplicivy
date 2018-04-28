@@ -1,36 +1,98 @@
 package com.github.kright.worldmodel.gamerules
 
 import com.github.kright.utils.HasId
-import javax.annotation.Resources
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
-  *
-  * todo something:
-  *
-  * units may be military and non-military (workers)
-  * units may be overland, ships and flying
-  *
-  * overland and ship units in addition might fire to several distance
-  * some of them (cannons) can't fight in closer fight
   */
-trait GameUnitType extends HasId{
+trait GameUnitType extends HasId {
+
+  def movingOn: MovingEnvironment
 
   def isMilitary: Boolean
 
+  def levels: Seq[GameUnitLevel]
+
+  def landMoves: Option[LandMoving]
+
+  def seaMoves: Option[WaterMoving]
+
+  def meleeCombat: Option[MeleeCombat]
+
+  def rangeAttack: Option[RangeAttack]
+
+  def airBombardment: Option[AirBombardment]
+
+  def antiAirDefence: Option[AntiAirDefence]
+
+  // build roads, landUpgrades, cities, destroy them
+  def possibleActions: Seq[GameUnitActionType]
+
+  def visibilityModel: VisibilityModel
+
+  /* ability to carry units */
+  def maxCarriedUnits: Int
+
   def cost: Int
 
-  def moves: Int
-
-  def attack: Int
-
-  def defence: Int
-
-  def rangedAttack: Int
-
-  def rangedAttackRange: Int
-
-  def requirements: Requirements
+  def requirements: RequirementForCityProduction
 
   def upgradesTo: Seq[GameUnitType]
 }
+
+//todo add cost of unit maintenance
+
+class GameUnitLevel(val requiredExperience: Int, val maxHitPoints: Int)
+
+class MeleeCombat(val attack: Int,
+                  val defence: Int,
+                  val attacksPerMove: Int,
+                  val canAttackFromWater: Boolean)
+
+class RangeAttack(val strength: Int,
+                  val range: Int,
+                  val attacksPerMove: Int)
+
+class AirBombardment(val bombardmentStrength: Int,
+                     val range: Int,
+                     val antiAirDefence: Int)
+
+class AntiAirDefence(val defence: Int, val defenceRange: Int)
+
+class WaterMoving(val moves: Int,
+                  val maxDepth: Int)
+
+
+/**
+  * some units (like tanks or catapults) can't move in mountains without roads
+  */
+class LandMoving(val moves: Int,
+                 val onlyOnRoads: Seq[TerrainType])
+
+
+/**
+  * model which determines which cells on map unit see.
+  */
+sealed trait VisibilityModel
+
+/**
+  * see own cell and 6 neighbours
+  * maybe see cells on distance 2 (depends on terrain type: mountains, hills, water)
+  */
+case object DirectVisibility extends VisibilityModel
+
+/**
+  * see all cells with distance <= range
+  *
+  * @param range distance to opened cell
+  */
+case class RadarModel(range: Int) extends VisibilityModel
+
+
+sealed trait MovingEnvironment
+
+case object Land extends MovingEnvironment
+
+case object Water extends MovingEnvironment
+
+case object Air extends MovingEnvironment

@@ -3,7 +3,7 @@ package com.github.kright.worldmodel
 import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.city.City
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.{NoRoad, Resource, RoadType, TerrainType}
+import com.github.kright.worldmodel.gamerules._
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -30,7 +30,7 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   var road: RoadType = NoRoad
 
-  var landUpgrade: Option[LandUpgrade] = None
+  var landUpgrade: Option[LandUpgradeType] = None
 
   var hasPollution: Boolean = false
 }
@@ -42,7 +42,7 @@ class ShadowedMapCell private(val x: Int, val y: Int,
                               val resource: Option[Resource],
                               val owner: Option[CountryLink],
                               val road: RoadType,
-                              val landUpgrade: Option[LandUpgrade],
+                              val landUpgrade: Option[LandUpgradeType],
                               val hasPollution: Boolean) extends MapCell {
 
   def this(c: MapCell) = this(c.x, c.y, c.terrain, c.city, c.resource, c.owner, c.road,
@@ -83,7 +83,7 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def road: RoadType = throwException
 
-  override def landUpgrade: Option[LandUpgrade] = throwException
+  override def landUpgrade: Option[LandUpgradeType] = throwException
 
   override def hasPollution: Boolean = throwException
 }
