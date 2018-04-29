@@ -21,3 +21,5 @@ sealed trait ResourceKind
 case object BonusResource extends ResourceKind
 
 case object StrategicResource extends ResourceKind
+
+case object LuxuryResource extends ResourceKind
