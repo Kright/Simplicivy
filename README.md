@@ -16,7 +16,6 @@ Project uses libgdx + scala
 main code placed in ```core``` module
 
 run it with```./gradlew desktop:run``` or test with ```gradlew core:test```
-```
 
 ### License
 
