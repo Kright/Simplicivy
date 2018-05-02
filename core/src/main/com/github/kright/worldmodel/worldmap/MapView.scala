@@ -20,6 +20,7 @@
 package com.github.kright.worldmodel.worldmap
 
 import com.github.kright.worldmodel.city.City
+import com.github.kright.worldmodel.country.CountryLink
 import com.github.kright.worldmodel.units.GameUnit
 import com.github.kright.worldmodel.{MapCell, Visible}
 
@@ -37,11 +38,27 @@ trait MapView[+T <: MapCell] {
 
   def allCells: Seq[T] //return view of data
 
-  def openedCells: Seq[T] = allCells.filter(_.visibility == Visible)
 
+  @inline
+  def visibleCells: Seq[T] = allCells.filter(_.visibility == Visible)
+
+  @inline
   def knownCells: Seq[T] = allCells.filter(_.visibility.isKnown)
 
   def allCities: Seq[City] = knownCells.flatMap(_.city)
 
   def allUnits: Seq[GameUnit] = knownCells.flatMap(_.units)
+
+  def cellsWithResources(owner: CountryLink): Seq[T] = knownCells.filter(_.resource.isDefined)
+
+  def playerCells(owner: CountryLink): Seq[T] = knownCells.filter(_.owner.contains(owner))
+
+  def playerUnits(owner: CountryLink): Seq[GameUnit] = allUnits.filter(_.owner == owner)
+
+  def playerResources(owner: CountryLink): Seq[T] = knownCells.filter(_.resource.isDefined)
+
+  //range 0: one cell, 1: 6 neighbor cells
+  def allCellsInRange(center: MapPosition, range: Int): Seq[T] = ??? //todo
+
+  def findPath(unit: Unit, to: MapPosition): Seq[T] = ??? //todo
 }
