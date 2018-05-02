@@ -17,3 +17,7 @@ main code placed in ```core``` module
 
 run it with```./gradlew desktop:run``` or test with ```gradlew core:test```
 ```
+
+### License
+
+The game is licensed under the GPL v3 License - see the COPYING for details.
