@@ -19,15 +19,29 @@
 
 package com.github.kright.worldmodel.worldmap
 
+import com.github.kright.worldmodel.city.City
+import com.github.kright.worldmodel.units.GameUnit
+import com.github.kright.worldmodel.{MapCell, Visible}
+
 /**
   * Created by Igor Slobodskov on 26 April 2018
   *
   * view of Map, which allows only observation
   */
-trait MapView[+T] {
+trait MapView[+T <: MapCell] {
   implicit val topology: MapTopology
 
   def apply(p: MapPosition): T
 
   def apply(p: Position): T = apply(p.asMapPosition)
+
+  def allCells: Seq[T] //return view of data
+
+  def openedCells: Seq[T] = allCells.filter(_.visibility == Visible)
+
+  def knownCells: Seq[T] = allCells.filter(_.visibility.isKnown)
+
+  def allCities: Seq[City] = knownCells.flatMap(_.city)
+
+  def allUnits: Seq[GameUnit] = knownCells.flatMap(_.units)
 }

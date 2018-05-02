@@ -25,7 +25,7 @@ import com.github.kright.worldmodel.MapCell
 /**
   * Created by Igor Slobodskov on 26 April 2018
   *
-  * Player's own map view (is stores cells which he visited)
+  * Player's own map view (it stores cells which he visited)
   */
 class PlayerMapView(private val simpleMap: SimpleMap,
                     private val table: Array2d[MapCell]) extends MapView[MapCell] {
@@ -36,6 +36,8 @@ class PlayerMapView(private val simpleMap: SimpleMap,
   assert(table.width == topology.width)
 
   override def apply(p: MapPosition): MapCell = table(p.x, p.y)
+
+  override def allCells: Seq[MapCell] = table.array.view
 
   @inline
   private def update(p: MapPosition, value: MapCell): Unit = table(p.x, p.y) = value

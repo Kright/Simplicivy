@@ -33,6 +33,8 @@ class SimpleMap(implicit val topology: MapTopology) extends MapView[MutableMapCe
 
   override def apply(p: MapPosition): MutableMapCell = table(p.x, p.y)
 
+  override def allCells: Seq[MutableMapCell] = table.array.view
+
   def update(p: MapPosition, value: MutableMapCell): Unit = table(p.x, p.y) = value
 
   def makePlayerView(): PlayerMapView = {
@@ -43,4 +45,6 @@ class SimpleMap(implicit val topology: MapTopology) extends MapView[MutableMapCe
 
     new PlayerMapView(this, array2d)
   }
+
+
 }
