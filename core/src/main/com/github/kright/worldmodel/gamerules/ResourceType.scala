@@ -19,14 +19,12 @@
 
 package com.github.kright.worldmodel.gamerules
 
-import com.github.kright.utils.HasId
-
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait ResourceType extends HasId {
+trait ResourceType extends HasName {
 
-  def resourceType: ResourceKind
+  def resourceKind: ResourceKind
 
   def requiredTerrain: Set[TerrainType]
 
@@ -42,3 +40,9 @@ case object BonusResource extends ResourceKind
 case object StrategicResource extends ResourceKind
 
 case object LuxuryResource extends ResourceKind
+
+class ResourceTypeImpl(var name: String,
+                       var resourceKind: ResourceKind,
+                       var requiredTerrain: Set[TerrainType],
+                       var requiredTechnology: Option[TechnologyDescription],
+                       var cellBonus: MutableCellProduction) extends ResourceType

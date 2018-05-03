@@ -19,12 +19,10 @@
 
 package com.github.kright.worldmodel.gamerules
 
-import com.github.kright.utils.HasId
-
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait CityBuildingType extends HasId {
+trait CityBuildingType extends HasName {
 
   def requires: RequirementForCityProduction
 
@@ -34,11 +32,15 @@ trait CityBuildingType extends HasId {
   def buildingEffect: BuildingEffect
 }
 
+class CityBuildingTypeImpl(var name: String,
+                           var requires: RequirementForCityProduction,
+                           var buildingEffect: BuildingEffect) extends CityBuildingType
+
 trait BuildingEffect {
 
   def maintenance: Int
 
-  def happines: Int
+  def happiness: Int
 
   def culture: Int
 
@@ -56,3 +58,13 @@ trait BuildingEffect {
 
   def pollution: Int
 }
+
+class BuildingEffectImpl(var maintenance: Int,
+                         var happiness: Int,
+                         var culture: Int,
+                         var taxBonus: Int,
+                         var researchBonus: Int,
+                         var productionBonus: Int,
+                         var defenceBonus: Int,
+                         var corruptionDecrease: Int,
+                         var pollution: Int) extends BuildingEffect

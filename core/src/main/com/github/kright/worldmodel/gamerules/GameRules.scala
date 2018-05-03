@@ -19,8 +19,6 @@
 
 package com.github.kright.worldmodel.gamerules
 
-import com.github.kright.utils.ObjectOwner
-
 /**
   * Created by Igor Slobodskov on 27 April 2018
   *
@@ -35,23 +33,30 @@ import com.github.kright.utils.ObjectOwner
 trait GameRules {
 
   // pure classes, don't hold links to other structures
+  def technologies: Seq[TechnologyDescription]
 
-  def technologies: ObjectOwner[TechnologyDescription]
-
-  def terrainTypes: ObjectOwner[TerrainType]
+  def terrainTypes: Seq[TerrainType]
 
   // uses techs and terrain types
   def resources: Seq[ResourceType]
 
   // uses someself, resources and technologies
-  def cityBuildings: ObjectOwner[CityBuildingType]
+  def cityBuildings: Seq[CityBuildingType]
 
   // uses terrain types
-  def langUpgradeTypes: ObjectOwner[LandUpgradeType]
+  def langUpgradeTypes: Seq[LandUpgradeType]
 
   // uses tech, resources, cityBuildingTypes, and itself
-  def unitTypes: ObjectOwner[GameUnitType]
+  def unitTypes: Seq[GameUnitType]
 
   // uses techs, unitTypes, cityBuildings
   def nations: Seq[Nation]
 }
+
+class GameRulesImpl(var technologies: Seq[TechnologyDescription],
+                    var terrainTypes: Seq[TerrainType],
+                    var resources: Seq[ResourceType],
+                    var cityBuildings: Seq[CityBuildingType],
+                    var langUpgradeTypes: Seq[LandUpgradeType],
+                    var unitTypes: Seq[GameUnitType],
+                    var nations: Seq[Nation]) extends GameRules

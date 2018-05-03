@@ -20,36 +20,8 @@
 package com.github.kright.worldmodel.gamerules
 
 /**
-  * Created by Igor Slobodskov on 26 April 2018
+  * Created by Igor Slobodskov on 02 May 2018
   */
-trait TerrainType extends HasName {
-
-  def isLand: Boolean
-
-  @inline
-  def isWater: Boolean = !isLand
-
-  /**
-    * will be used for visibility calculations
-    * 0 for water, 1 for land, 2 for hills, 3 for mountains
-    * When you stay on mountain above plain land, you can see farther
-    */
-  def height: Int
-
-  def movementCost: Int
-
-  def defenceBonus: Int
-
-  def produces: CellProduction
-}
-
-class TerrainTypeImpl(var name: String,
-                      var isLand: Boolean,
-                      var height: Int,
-                      var movementCost: Int,
-                      var defenceBonus: Int,
-                      var produces: MutableCellProduction) extends TerrainType {
-  def this() {
-    this(null, true, 0, 0, 0, null)
-  }
+trait HasName {
+  def name: String
 }

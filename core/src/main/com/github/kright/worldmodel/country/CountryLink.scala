@@ -19,9 +19,8 @@
 
 package com.github.kright.worldmodel.country
 
-import com.github.kright.utils.HasId
 import com.github.kright.worldmodel.city.City
-import com.github.kright.worldmodel.gamerules.GameRules
+import com.github.kright.worldmodel.gamerules.{GameRules, HasName}
 import com.github.kright.worldmodel.science.PlayerTechnologies
 import com.github.kright.worldmodel.units.GameUnit
 
@@ -35,7 +34,7 @@ trait CountryLink {
 }
 
 
-trait Country extends HasId {
+trait Country extends HasName {
 
   //different counties may have different units types, buildings and etc.
   def gameRules: GameRules

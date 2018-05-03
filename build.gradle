@@ -19,6 +19,7 @@ allprojects {
         scalaVersion = '2.11.12'
         scalatestVersion = '2.11:3.0.5'
         junitVersion = '4.12'
+        typesafeConfigVersion = '1.2.1' // because of java 6 on android
     }
 
     repositories {
@@ -70,6 +71,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 
         compile "org.scala-lang:scala-library:$scalaVersion"
+        compile "com.typesafe:config:$typesafeConfigVersion"
+
         testCompile "org.scalatest:scalatest_$scalatestVersion"
         testCompile "junit:junit:$junitVersion"
     }

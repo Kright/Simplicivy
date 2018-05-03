@@ -52,5 +52,5 @@ private class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends Play
 
   override def isResearched(tech: TechnologyDescription): Boolean = researchedSet.contains(tech)
 
-  override def all: Iterable[TechnologyDescription] = gameRules.technologies.all
+  override def all: Seq[TechnologyDescription] = gameRules.technologies
 }

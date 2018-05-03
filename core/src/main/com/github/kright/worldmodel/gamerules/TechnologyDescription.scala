@@ -19,13 +19,14 @@
 
 package com.github.kright.worldmodel.gamerules
 
-import com.github.kright.utils.HasId
 import com.github.kright.worldmodel.science.PlayerTechnologies
+
+import scala.collection.mutable.ArrayBuffer
 
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait TechnologyDescription extends HasId {
+trait TechnologyDescription extends HasName {
   def scienceCost: Int
 
   def requiredTechnologies: Seq[TechnologyDescription]
@@ -37,7 +38,9 @@ trait TechnologyDescription extends HasId {
   @inline
   def isAvailable(implicit playerTech: PlayerTechnologies): Boolean =
     !isResearched && requiredTechnologies.forall(_.isResearched)
-
-  def leadTo(implicit gameRules: GameRules) =
-    gameRules.technologies.all.filter(_.requiredTechnologies.contains(this))
 }
+
+class TechnologyDescriptionImpl(var name: String,
+                                var scienceCost: Int,
+                                var requiredTechnologies: ArrayBuffer[TechnologyDescription] =
+                                new ArrayBuffer[TechnologyDescription]()) extends TechnologyDescription

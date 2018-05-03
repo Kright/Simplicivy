@@ -24,6 +24,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.github.kright.worldmodel.gamerules.ConfigLoader
 
 
 class Main extends ApplicationAdapter {
@@ -33,6 +34,7 @@ class Main extends ApplicationAdapter {
   override def create(): Unit = {
     batch = new SpriteBatch()
     img = new Texture("badlogic.jpg")
+    ConfigLoader.test()
   }
 
   override def render(): Unit = {

@@ -19,14 +19,10 @@
 
 package com.github.kright.worldmodel.gamerules
 
-import com.github.kright.utils.HasId
-
-import scala.collection.mutable
-
 /**
   * Created by Igor Slobodskov on 29 April 2018
   */
-trait Nation extends HasId {
+trait Nation extends HasName {
 
   def name: String
 
@@ -61,6 +57,24 @@ trait NationFeatures {
   def cultural: Boolean
 }
 
+
 class Modification[T](val remove: Set[T],
                       val swap: Map[T, T],
                       val add: Seq[T])
+
+
+class NationFeaturesImpl(var moreFood: Boolean,
+                         var moreCommerce: Boolean,
+                         var moreProduction: Boolean,
+                         var landExpansion: Boolean,
+                         var seaExpansion: Boolean,
+                         var military: Boolean,
+                         var scientific: Boolean,
+                         var cultural: Boolean) extends NationFeatures
+
+
+class NationImpl(var name: String,
+                 var features: NationFeaturesImpl,
+                 var extraGameUnits: Modification[GameUnitType],
+                 var extraBuildings: Modification[CityBuildingType],
+                 var startingTechs: Seq[TechnologyDescription]) extends Nation

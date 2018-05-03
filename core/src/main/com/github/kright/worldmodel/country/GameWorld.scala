@@ -17,26 +17,18 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright.worldmodel.gamerules
+package com.github.kright.worldmodel.country
 
-import scala.collection.mutable
+import com.github.kright.worldmodel.worldmap.SimpleMap
 
 /**
-  * Created by Igor Slobodskov on 26 April 2018
+  * Created by Igor Slobodskov on 02 May 2018
   */
-trait LandUpgradeType extends HasName {
+trait GameWorld {
 
-  def possibleTerrain: Set[TerrainType]
+  def baseMap: SimpleMap
 
-  def resources: ResourcesRequirement
+  def countries: Seq[Country]
 }
 
-sealed trait ResourcesRequirement
-
-case object AllowAll extends ResourcesRequirement
-
-case class ResourcesInList(permittedResources: Set[ResourceType]) extends ResourcesRequirement
-
-class LandUpgradeTypeImpl(var name: String,
-                          var resources: ResourcesRequirement,
-                          val possibleTerrain: Set[TerrainType]) extends LandUpgradeType
+trait Player

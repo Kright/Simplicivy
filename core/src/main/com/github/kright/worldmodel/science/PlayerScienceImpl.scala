@@ -71,7 +71,7 @@ class PlayerScienceImpl(implicit gameRules: GameRules) extends PlayerScience {
 
   override def currentProgress: Iterable[ResearchProgress] = savedProgress.values
 
-  override def all: Iterable[TechnologyDescription] = tech.all
+  override def all: Seq[TechnologyDescription] = tech.all
 
   override def available: Seq[TechnologyDescription] = tech.available
 

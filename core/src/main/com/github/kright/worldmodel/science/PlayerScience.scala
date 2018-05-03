@@ -47,7 +47,7 @@ trait PlayerScience extends PlayerTechnologies {
 
 trait PlayerTechnologies {
 
-  def all: Iterable[TechnologyDescription]
+  def all: Seq[TechnologyDescription]
 
   def available: Seq[TechnologyDescription]
 
