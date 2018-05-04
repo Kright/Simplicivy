@@ -90,17 +90,16 @@ object GameRules extends ConfigConverter[GameRulesImpl] {
 
   override def convert(config: Config): GameRulesImpl = {
 
-    implicit val gameRules = new GameRulesImpl()
-    implicit val linking = new DilatedExecutor()
+    implicit val gameRules: GameRulesImpl = new GameRulesImpl()
+    implicit val linking: DilatedExecutor = new DilatedExecutor()
 
     gameRules.technologies ++= config.getConfigList("technologies").asScala.map(_.asLinked[TechnologyDescriptionImpl])
     gameRules.terrainTypes ++= config.getConfigList("terrainTypes").asScala.map(_.as[TerrainTypeImpl])
-
     gameRules.resources ++= config.getConfigList("resources").asScala.map(_.asLinked[ResourceTypeImpl])
     gameRules.cityBuildings ++= config.getConfigList("cityBuildings").asScala.map(_.asLinked[CityBuildingTypeImpl])
-
     gameRules.langUpgradeTypes ++= config.getConfigList("landUpgrades").asScala.map(_.asLinked[LandUpgradeTypeImpl])
     gameRules.unitTypes ++= config.getConfigList("units").asScala.map(_.asLinked[GameUnitTypeImpl])
+    gameRules.nations ++= config.getConfigList("nations").asScala.map(_.asLinked[NationImpl])
 
     linking.execute()
 

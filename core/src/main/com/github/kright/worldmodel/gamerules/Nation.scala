@@ -19,6 +19,11 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
+import com.typesafe.config.Config
+
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * Created by Igor Slobodskov on 29 April 2018
   */
@@ -31,9 +36,10 @@ trait Nation extends HasName {
 
   def startingTechs: Seq[TechnologyDescription]
 
-  def extraGameUnits: Modification[GameUnitType]
-
-  def extraBuildings: Modification[CityBuildingType]
+  //  def extraGameUnits: Modification[GameUnitType]
+  //
+  //  def extraBuildings: Modification[CityBuildingType]
+  // todo in future
 }
 
 
@@ -57,13 +63,6 @@ trait NationFeatures {
   def cultural: Boolean
 }
 
-
-class Modification[T](val removeAll: Boolean,
-                      val remove: Set[T],
-                      val swap: Map[T, T],
-                      val add: Seq[T])
-
-
 class NationFeaturesImpl(var moreFood: Boolean,
                          var moreCommerce: Boolean,
                          var moreProduction: Boolean,
@@ -74,8 +73,36 @@ class NationFeaturesImpl(var moreFood: Boolean,
                          var cultural: Boolean) extends NationFeatures
 
 
-class NationImpl(var name: String,
+class NationImpl(val name: String,
                  var features: NationFeaturesImpl,
-                 var extraGameUnits: Modification[GameUnitType],
-                 var extraBuildings: Modification[CityBuildingType],
-                 var startingTechs: Seq[TechnologyDescription]) extends Nation
+                 val startingTechs: ArrayBuffer[TechnologyDescription] = new ArrayBuffer[TechnologyDescription]()) extends Nation
+
+object Nation extends DilatedConverter[NationImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit cfg: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): NationImpl = {
+    new NationImpl(
+      name = cfg.getString("name"),
+      features = nationFeatures(cfg)) {
+      this.doLate {
+        startingTechs ++= cfg.getStrings("startTechnologies").map(gameRules.technologies(_))
+      }
+    }
+  }
+
+  private def nationFeatures(c: Config) = {
+    implicit def strToBoolean(s: String): Boolean = c.getOption[Boolean](s).getOrElse(false)
+
+    new NationFeaturesImpl(
+      moreFood = "moreFood",
+      moreCommerce = "moreCommerce",
+      moreProduction = "moreProduction",
+      landExpansion = "landExpansion",
+      seaExpansion = "seaExpansion",
+      military = "military",
+      scientific = "scientific",
+      cultural = "cultural"
+    )
+  }
+}

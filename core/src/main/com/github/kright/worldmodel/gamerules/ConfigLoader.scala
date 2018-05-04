@@ -85,12 +85,13 @@ object ConfigLoader {
   implicit val converterCityBuildingType: DilatedConverter[CityBuildingTypeImpl] = CityBuildingType
   implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeTypeImpl] = LandUpgradeType
   implicit val converterGameUnitType: DilatedConverter[GameUnitTypeImpl] = GameUnitType
+  implicit val convertNationImpl: DilatedConverter[NationImpl] = Nation
 
 
-  implicit val getIntOption = new ConfigGetOption[Int](_.getInt(_))
-  implicit val getStringOption = new ConfigGetOption[String](_.getString(_))
-  implicit val getBooleanOption = new ConfigGetOption[Boolean](_.getBoolean(_))
-  implicit val getConfigOption = new ConfigGetOption[Config](_.getConfig(_))
+  implicit val getIntOption: ConfigGetOption[Int] = new ConfigGetOption[Int](_.getInt(_))
+  implicit val getStringOption: ConfigGetOption[String] = new ConfigGetOption[String](_.getString(_))
+  implicit val getBooleanOption: ConfigGetOption[Boolean] = new ConfigGetOption[Boolean](_.getBoolean(_))
+  implicit val getConfigOption: ConfigGetOption[Config] = new ConfigGetOption[Config](_.getConfig(_))
 }
 
 class ParsingError(msg: String) extends RuntimeException(msg)
