@@ -30,74 +30,67 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ConfigLoaderBigTest extends FunSuite {
 
-  def text =
+  def text: String =
     """
       |gameRules {
-      |   technologies = [
-      |      { name = simple, cost = 5}
-      |      { name = military, cost = 10, requiredTechnologies = [simple]}
-      |      { name = peaceful, cost = 10, requiredTechnologies = [simple]}
-      |      { name = complex, cost = 20, requiredTechnologies = [military, peaceful]}
-      |   ]
+      |   technologies {
+      |      simple { cost = 5}
+      |      military { cost = 10, requiredTechnologies = [simple]}
+      |      peaceful { cost = 10, requiredTechnologies = [simple]}
+      |      complex = { cost = 20, requiredTechnologies = [military, peaceful]}
+      |   }
       |
-      |   terrainTypes = [
-      |      {
-      |         name = grass
+      |   terrainTypes {
+      |      grass {
       |         isLand = true
       |         height = 1
       |         movementCost = 1
       |         produces {food: 2, production: 1, commerce: 1}
       |      }
-      |      {
-      |         name = sea,
+      |      sea {
       |         isLand = false
       |         height = -2
       |         produces {food: 1, commerce: 1}
       |      }
-      |      {
-      |         name = hills
+      |      hills {
       |         isLand = true
       |         height = 2
       |         movementCost = 2
       |         defenceBonus = 1
       |         produces {food: 1, production: 2, commerce: 2}
       |      }
-      |   ]
+      |   }
       |
-      |   resources = [
-      |     {name = fish, kind=bonus, bonus {food:3}, terrain = [sea]}
-      |     {name = iron, kind=strategic, bonus {production: 3}, terrain = [hills], technology = military}
-      |     {name = fur, kind=luxury, bonus {food: 1, commerce: 2}, terrain = [hills, grass]}
-      |   ]
+      |   resources {
+      |     fish = {kind=bonus, bonus {food:3}, terrain = [sea]}
+      |     iron = {name = iron, kind=strategic, bonus {production: 3}, terrain = [hills], technology = military}
+      |     fur = {kind=luxury, bonus {food: 1, commerce: 2}, terrain = [hills, grass]}
+      |   }
       |
-      |   cityBuildings = [
-      |     {
-      |       name = walls,
+      |   cityBuildings = {
+      |     walls {
       |       requires = {
       |         cost = 10
       |         technology = [military, peaceful]
       |       }
       |       effects {maintenance: 2, defence: 2}
       |     }
-      |     {
-      |       name = watermill
+      |     watermill {
       |       requires = {
       |         cost = 10
-      |         technology = [complex]
+      |         technology = complex
       |         requireRiver = true
       |       }
       |       effects {maintenance: 1, productionBonus: 1}
       |     }
-      |     {
-      |       name = library
+      |     library {
       |       requires = {
       |         cost = 20
       |         technology = simple
       |       }
       |       effects {culture: 3, happiness: 1, maintenance: 2}
       |     }
-      |     {
-      |       name = university
+      |     university {
       |       requires = {
       |         cost = 40
       |         technology = complex
@@ -105,18 +98,17 @@ class ConfigLoaderBigTest extends FunSuite {
       |       }
       |       effects = {culture: 5, happiness: 2, maintenance: 3}
       |     }
-      |   ]
+      |   }
       |
-      |   landUpgrades = [
-      |     {name = farm, resources = [fur]}
-      |     {name: castle}
-      |   ]
+      |   landUpgrades = {
+      |     farm = {resources = [fur]}
+      |     castle = {}
+      |   }
       |
       |   standardLevels = [{exp: 0, hp: 2}, {exp: 2, hp: 3}, {exp: 10, hp: 4}, {exp: 20, hp: 5}]
       |
-      |   units = [
-      |     {
-      |       name = warrior
+      |   units = {
+      |     warrior {
       |       moveOn = land
       |       military = true
       |       levels = ${standardLevels}
@@ -126,8 +118,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |       maintenance = 1
       |       upgradesTo = swordsman
       |     }
-      |     {
-      |       name = swordsman
+      |     swordsman {
       |       moveOn = land
       |       military = true
       |       levels = ${standardLevels}
@@ -140,8 +131,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |         resources = iron
       |       }
       |     }
-      |     {
-      |       name = boat
+      |     boat {
       |       moveOn = water
       |       military = true
       |       levels = ${standardLevels}
@@ -156,33 +146,30 @@ class ConfigLoaderBigTest extends FunSuite {
       |         requireSea = true
       |       }
       |     }
-      |   ]
+      |   }
       |
-      |   nations = [
-      |     {
-      |        name = UK
+      |   nations {
+      |     UK {
       |        features {
       |           seaExpansion = true
       |           moreCommerce = true
       |        }
-      |        startingTechs = [simple]
+      |        startingTechs = simple
       |     }
-      |     {
-      |       name = Roma
+      |     Roma {
       |       features {
       |         military = true
       |         landExpansion = true
       |       }
       |     }
-      |     {
-      |       name = Greece
+      |     Greece {
       |       features {
       |         cultural = true
       |         scientific = true
       |       }
       |       startingTechs = [simple, peaceful]
       |     }
-      |   ]
+      |   }
       |}
       |
     """.stripMargin

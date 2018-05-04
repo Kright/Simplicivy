@@ -20,7 +20,7 @@
 package com.github.kright.worldmodel.gamerules
 
 import com.github.kright.utils.DilatedExecutor
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigObject, ConfigValue, ConfigValueFactory}
 
 import scala.collection.mutable
 
@@ -93,13 +93,13 @@ object GameRules extends ConfigConverter[GameRulesImpl] {
     implicit val gameRules: GameRulesImpl = new GameRulesImpl()
     implicit val linking: DilatedExecutor = new DilatedExecutor()
 
-    gameRules.technologies ++= config.getConfigList("technologies").asScala.map(_.asLinked[TechnologyDescriptionImpl])
-    gameRules.terrainTypes ++= config.getConfigList("terrainTypes").asScala.map(_.as[TerrainTypeImpl])
-    gameRules.resources ++= config.getConfigList("resources").asScala.map(_.asLinked[ResourceTypeImpl])
-    gameRules.cityBuildings ++= config.getConfigList("cityBuildings").asScala.map(_.asLinked[CityBuildingTypeImpl])
-    gameRules.langUpgradeTypes ++= config.getConfigList("landUpgrades").asScala.map(_.asLinked[LandUpgradeTypeImpl])
-    gameRules.unitTypes ++= config.getConfigList("units").asScala.map(_.asLinked[GameUnitTypeImpl])
-    gameRules.nations ++= config.getConfigList("nations").asScala.map(_.asLinked[NationImpl])
+    gameRules.technologies ++= config.getNamedEntries("technologies").map(_.asLinked[TechnologyDescriptionImpl])
+    gameRules.terrainTypes ++= config.getNamedEntries("terrainTypes").map(_.as[TerrainTypeImpl])
+    gameRules.resources ++= config.getNamedEntries("resources").map(_.asLinked[ResourceTypeImpl])
+    gameRules.cityBuildings ++= config.getNamedEntries("cityBuildings").map(_.asLinked[CityBuildingTypeImpl])
+    gameRules.langUpgradeTypes ++= config.getNamedEntries("landUpgrades").map(_.asLinked[LandUpgradeTypeImpl])
+    gameRules.unitTypes ++= config.getNamedEntries("units").map(_.asLinked[GameUnitTypeImpl])
+    gameRules.nations ++= config.getNamedEntries("nations").map(_.asLinked[NationImpl])
 
     linking.execute()
 

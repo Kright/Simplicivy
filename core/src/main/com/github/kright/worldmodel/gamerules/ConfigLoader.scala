@@ -21,7 +21,7 @@ package com.github.kright.worldmodel.gamerules
 
 
 import com.github.kright.utils.DilatedExecutor
-import com.typesafe.config.{Config, ConfigException, ConfigValueType}
+import com.typesafe.config.{Config, ConfigException, ConfigValueFactory, ConfigValueType}
 
 import scala.collection.JavaConverters._
 
@@ -54,7 +54,7 @@ object ConfigLoader {
         config.getValue(path).valueType() match {
           case ConfigValueType.STRING => Seq(config.getString(path))
           case ConfigValueType.LIST => config.getStringList(path).asScala
-          case _ => ???
+          case _ => throw new ParsingError(s"wrong type in '$path' at line ${config.origin().lineNumber()} in $config")
         }
       } else {
         List.empty
@@ -76,6 +76,14 @@ object ConfigLoader {
 
     def getOption[T](path: String)(implicit getOption: ConfigGetOption[T]): Option[T] =
       getOption.read(config, path)
+
+    def getNamedEntries(path: String): Seq[Config] = {
+      val names = config.getObject(path).keySet().asScala.toSeq
+      val innerConf = config.getConfig(path)
+      names.map { name =>
+        innerConf.getConfig(name).withValue("name", ConfigValueFactory.fromAnyRef(name))
+      }
+    }
   }
 
   implicit class DoLateExt[T](val a: T) extends AnyVal {
