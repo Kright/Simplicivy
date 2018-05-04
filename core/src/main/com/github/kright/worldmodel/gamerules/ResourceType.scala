@@ -19,6 +19,11 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
+import com.typesafe.config.Config
+
+import scala.collection.mutable
+
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
@@ -26,7 +31,7 @@ trait ResourceType extends HasName {
 
   def resourceKind: ResourceKind
 
-  def requiredTerrain: Set[TerrainType]
+  def requiredTerrain: mutable.Set[TerrainType]
 
   def requiredTechnology: Option[TechnologyDescription]
 
@@ -43,6 +48,30 @@ case object LuxuryResource extends ResourceKind
 
 class ResourceTypeImpl(var name: String,
                        var resourceKind: ResourceKind,
-                       var requiredTerrain: Set[TerrainType],
+                       var requiredTerrain: mutable.Set[TerrainType],
                        var requiredTechnology: Option[TechnologyDescription],
                        var cellBonus: MutableCellProduction) extends ResourceType
+
+object ResourceType extends DilatedConverter[ResourceTypeImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): ResourceTypeImpl = {
+    new ResourceTypeImpl(config.getString("name"),
+      config.getString("kind") match {
+        case "bonus" => BonusResource
+        case "strategic" => StrategicResource
+        case "luxury" => LuxuryResource
+      },
+      new mutable.HashSet[TerrainType](),
+      None,
+      cellBonus = config.getConfig("bonus").as[MutableCellProduction]
+    ) {
+      this.doLate {
+        requiredTerrain ++= config.getStrings("terrain").map(gameRules.terrainTypes(_))
+        requiredTechnology = config.getOption[String]("requiredTechnology").map(gameRules.technologies(_))
+      }
+    }
+  }
+
+}

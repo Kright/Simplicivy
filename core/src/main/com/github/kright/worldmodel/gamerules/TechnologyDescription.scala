@@ -19,7 +19,9 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
 import com.github.kright.worldmodel.science.PlayerTechnologies
+import com.typesafe.config.Config
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -42,5 +44,19 @@ trait TechnologyDescription extends HasName {
 
 class TechnologyDescriptionImpl(var name: String,
                                 var scienceCost: Int,
-                                var requiredTechnologies: ArrayBuffer[TechnologyDescription] =
-                                new ArrayBuffer[TechnologyDescription]()) extends TechnologyDescription
+                                var requiredTechnologies: ArrayBuffer[TechnologyDescription] = new ArrayBuffer[TechnologyDescription]()) extends TechnologyDescription
+
+object TechnologyDescription extends DilatedConverter[TechnologyDescriptionImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): TechnologyDescriptionImpl =
+    new TechnologyDescriptionImpl(
+      config.getString("name"),
+      config.getInt("scienceCost")) {
+      this.doLate {
+        requiredTechnologies ++= config.getStrings("requiredTechnologies").map(gameRules.technologies(_))
+      }
+    }
+
+}

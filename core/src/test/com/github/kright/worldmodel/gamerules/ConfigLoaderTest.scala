@@ -95,5 +95,4 @@ class ConfigLoaderTest extends FunSuite {
     assert(t.produces.production == 5)
     assert(t.produces.commerce == 6)
   }
-
 }

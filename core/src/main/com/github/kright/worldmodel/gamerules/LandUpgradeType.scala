@@ -19,6 +19,9 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
+import com.typesafe.config.Config
+
 import scala.collection.mutable
 
 /**
@@ -26,7 +29,7 @@ import scala.collection.mutable
   */
 trait LandUpgradeType extends HasName {
 
-  def possibleTerrain: Set[TerrainType]
+  def possibleTerrain: mutable.Set[TerrainType]
 
   def resources: ResourcesRequirement
 }
@@ -39,4 +42,23 @@ case class ResourcesInList(permittedResources: Set[ResourceType]) extends Resour
 
 class LandUpgradeTypeImpl(var name: String,
                           var resources: ResourcesRequirement,
-                          val possibleTerrain: Set[TerrainType]) extends LandUpgradeType
+                          val possibleTerrain: mutable.Set[TerrainType]) extends LandUpgradeType
+
+object LandUpgradeType extends DilatedConverter[LandUpgradeTypeImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandUpgradeTypeImpl = {
+    new LandUpgradeTypeImpl(config.getString("name"), null, new mutable.HashSet[TerrainType]) {
+      this.doLate {
+        resources = if (config.hasPath("resources")) {
+          ResourcesInList(config.getStrings("resources").map(gameRules.resources(_)).toSet)
+        } else {
+          AllowAll
+        }
+
+        possibleTerrain ++= config.getStrings("terrain").map(gameRules.terrainTypes(_))
+      }
+    }
+  }
+}

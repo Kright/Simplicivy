@@ -17,35 +17,20 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright
+package com.github.kright.utils
 
-import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.github.kright.worldmodel.gamerules.ConfigLoader
+import scala.collection.mutable.ArrayBuffer
 
+/**
+  * Created by Igor Slobodskov on 04 May 2018
+  */
+class DilatedExecutor {
+  private val callbacks = new ArrayBuffer[() => Unit]()
 
-class Main extends ApplicationAdapter {
-  private var batch: SpriteBatch = _
-  private var img: Texture = _
+  def add(func: () => Unit): Unit = callbacks += func
 
-  override def create(): Unit = {
-    batch = new SpriteBatch()
-    img = new Texture("badlogic.jpg")
-  }
-
-  override def render(): Unit = {
-    Gdx.gl.glClearColor(1, 0, 0, 1)
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-    batch.begin()
-    batch.draw(img, 0, 0)
-    batch.end()
-  }
-
-  override def dispose(): Unit = {
-    batch.dispose()
-    img.dispose()
+  def execute(): Unit = {
+    callbacks.foreach(f => f())
+    callbacks.clear()
   }
 }

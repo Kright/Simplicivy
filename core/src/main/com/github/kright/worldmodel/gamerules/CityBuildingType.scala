@@ -19,6 +19,7 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
 import com.typesafe.config.Config
 
 /**
@@ -37,6 +38,18 @@ trait CityBuildingType extends HasName {
 class CityBuildingTypeImpl(var name: String,
                            var requires: RequirementForCityProduction,
                            var buildingEffect: BuildingEffect) extends CityBuildingType
+
+
+object CityBuildingType extends DilatedConverter[CityBuildingTypeImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): CityBuildingTypeImpl = {
+    new CityBuildingTypeImpl(config.getString("name"),
+      config.asLinked[RequirementForCityProduction]("requires"),
+      config.getAs[BuildingEffectImpl]("effects"))
+  }
+}
 
 
 trait BuildingEffect {

@@ -19,13 +19,40 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
+import com.typesafe.config.Config
+
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * Created by Igor Slobodskov on 28 April 2018
   */
 
-class RequirementForCityProduction(val cost: Int,
-                                   val technology: Seq[TechnologyDescription],
-                                   val resources: Seq[ResourceType],
-                                   val cityBuildings: Seq[CityBuildingType],
-                                   val requireRiver: Boolean = false,
-                                   val requireSea: Boolean = false)
+class RequirementForCityProduction(var cost: Int,
+                                   var technology: ArrayBuffer[TechnologyDescription],
+                                   var resources: ArrayBuffer[ResourceType],
+                                   var cityBuildings: ArrayBuffer[CityBuildingType],
+                                   var requireRiver: Boolean = false,
+                                   var requireSea: Boolean = false)
+
+
+object RequirementForCityProduction extends DilatedConverter[RequirementForCityProduction] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): RequirementForCityProduction = {
+    new RequirementForCityProduction(config.getInt("cost"),
+      new ArrayBuffer[TechnologyDescription](),
+      new ArrayBuffer[ResourceType](),
+      new ArrayBuffer[CityBuildingType](),
+      config.getOption[Boolean]("requireRiver").getOrElse(false),
+      config.getOption[Boolean]("requireSea").getOrElse(false)
+    ) {
+      this.doLate {
+        technology ++= config.getStrings("technology").map(gameRules.technologies(_))
+        resources ++= config.getStrings("resources").map(gameRules.resources(_))
+        cityBuildings ++= config.getStrings("cityBuildings").map(gameRules.cityBuildings(_))
+      }
+    }
+  }
+}

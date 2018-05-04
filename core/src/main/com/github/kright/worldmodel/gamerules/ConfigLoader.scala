@@ -20,6 +20,7 @@
 package com.github.kright.worldmodel.gamerules
 
 
+import com.github.kright.utils.DilatedExecutor
 import com.typesafe.config.{Config, ConfigException, ConfigFactory}
 
 import scala.collection.JavaConverters._
@@ -30,9 +31,6 @@ import scala.collection.mutable.ArrayBuffer
   * Created by Igor Slobodskov on 02 May 2018
   */
 object ConfigLoader {
-
-  import LinksSet._
-
 
   implicit class ConfigExt(val config: Config) extends AnyVal {
     def as[T](implicit converter: ConfigConverter[T]): T = {
@@ -46,135 +44,59 @@ object ConfigLoader {
       }
     }
 
-    def link[T <: HasName](name: String)(implicit linkSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): T =
-      linkSet.link(name, config)
+    def getAs[T](path: String)(implicit converter: ConfigConverter[T]): T = config.getConfig(path).as[T]
 
-    def asLinked[T <: HasName](implicit converter: LinkingConverter[T], linksSet: LinksSet): T =
-      converter.convert(config, linksSet)
+    //
+    //    def link[T <: HasName](name: String)(implicit linkSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): T =
+    //      linkSet.link(name, config)
+    //
+    //    def linkList[T <: HasName](name: String)(implicit linksSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): Seq[T] =
+    //      linksSet.linkList(name, config)
 
-    def get[T](path: String)(implicit getOption: ConfigGetOption[T]): Option[T] =
+    def getStrings(path: String): Seq[String] =
+      if (config.hasPath(path)) {
+        config.getStringList(path).asScala
+      } else {
+        List.empty
+      }
+
+
+    def asLinked[T](implicit converter: DilatedConverter[T], gameRules: GameRules, dilatedExecutor: DilatedExecutor): T =
+      converter.convert(config, gameRules, dilatedExecutor)
+
+    def asLinked[T](path: String)(implicit converter: DilatedConverter[T], gameRules: GameRules, dilatedExecutor: DilatedExecutor): T =
+      converter.convert(config.getConfig("path"), gameRules, dilatedExecutor)
+
+    def getOption[T](path: String)(implicit getOption: ConfigGetOption[T]): Option[T] =
       getOption.read(config, path)
   }
 
-  implicit val converterA: ConfigConverter[A] = new ConfigConverter[A] {
-    override def convert(config: Config): A = new A(config.getInt("a"), config.getString("name"))
-  }
-
-  implicit val converterB: LinkingConverter[B] = new LinkingConverter[B] {
-    override def convert(implicit config: Config, linksSet: LinksSet): B =
-      new B(null, config.getString("name")) {
-        this.doLate {
-          a = config.link[A]("a")
-        }
-      }
+  implicit class DoLateExt[T](val a: T) extends AnyVal {
+    def doLate(func: => Unit)(implicit dilated: DilatedExecutor): Unit = {
+      dilated.add { () => func }
+    }
   }
 
   implicit val converterCellProduction: ConfigConverter[MutableCellProduction] = CellProduction
   implicit val converterBuildingEffectImpl: ConfigConverter[BuildingEffectImpl] = BuildingEffect
   implicit val converterTerrainTypeImpl: ConfigConverter[TerrainTypeImpl] = TerrainType
 
-  implicit class HasNameExt[T <: HasName](val a: T) extends AnyVal {
-    def doLate(func: => Unit)(implicit linkSet: LinksSet): Unit = {
-      linkSet.addCallback { () => func }
-    }
-  }
+  implicit val converterResourceType: DilatedConverter[ResourceTypeImpl] = ResourceType
+  implicit val converterTechnologyDescriptionImpl: DilatedConverter[TechnologyDescriptionImpl] = TechnologyDescription
+  implicit val converterRequirementForCityProduction: DilatedConverter[RequirementForCityProduction] = RequirementForCityProduction
+  implicit val converterCityBuildingType: DilatedConverter[CityBuildingTypeImpl] = CityBuildingType
+  implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeTypeImpl] = LandUpgradeType
 
-  implicit val intConverter = new ConfigGetOption[Int](_.getInt(_))
-
-  def test(): Unit = {
-
-    def str =
-      """
-        |gameRules {
-        |  listA = [
-        |    { name = "a0", a = 0}
-        |    { name = "a1", a = 1}
-        |  ]
-        |
-        |  listB = [
-        |   {name = b0, a = a0}
-        |   {name = b1, a = a1}
-        |   {name = b2}
-        |  ]
-        |}
-        |
-        |cellProduction {
-        |  food = 2
-        |  production = 3
-        |  commerce = 1
-        |}
-      """.stripMargin
-
-
-    implicit val linkSet: LinksSet = new LinksSet()
-
-    val config = ConfigFactory.parseString(str)
-
-    val gameRules = config.getConfig("gameRules")
-    val listA = gameRules.getConfigList("listA").asScala.map(_.as[A])
-    val listB = gameRules.getConfigList("listB").asScala.map(_.asLinked[B])
-
-    val cellProduction = config.getConfig("cellProduction").as[MutableCellProduction]
-
-    linkSet.linksA.addValues(listA)
-    linkSet.linksB.addValues(listB)
-
-    linkSet.resolveLinks()
-
-    println(listA.mkString(","))
-    println(listB.mkString(","))
-
-    println("Hello world!")
-  }
+  implicit val getIntOption = new ConfigGetOption[Int](_.getInt(_))
+  implicit val getStringOption = new ConfigGetOption[String](_.getString(_))
+  implicit val getBooleanOption = new ConfigGetOption[Boolean](_.getBoolean(_))
 }
 
 class ParsingError(msg: String) extends RuntimeException(msg)
 
-class A(var a: Int, var name: String) extends HasName {
-  override def toString: String = s"A($a,$name)"
-}
 
-class B(var a: A, var name: String) extends HasName {
-  override def toString: String = s"B($a,$name)"
-}
-
-class LinkHolder[T <: HasName] {
-  val values = new mutable.HashMap[String, T]()
-
-  def link(name: String, config: Config): T = {
-    if (config.hasPath(name)) {
-      values(config.getString(name))
-    } else {
-      throw new ParsingError(s"field '$name' at line ${config.origin().lineNumber()} in $config not found")
-    }
-  }
-
-  def addValues(vv: Seq[T]): Unit = vv.foreach { v => values(v.name) = v }
-}
-
-class LinksSet {
-  val linksA = new LinkHolder[A]
-  val linksB = new LinkHolder[B]
-
-  def linkA(s: String): A = linksA.values(s)
-
-  def linkB(s: String): B = linksB.values(s)
-
-  private val callBacks = new ArrayBuffer[() => Unit]()
-
-  def addCallback(func: () => Unit): Unit = callBacks += func
-
-  def resolveLinks(): Unit = callBacks.foreach(f => f())
-}
-
-object LinksSet {
-  implicit def toHolderA(linksSet: LinksSet): LinkHolder[A] = linksSet.linksA
-
-  implicit def toHolderB(linksSet: LinksSet): LinkHolder[B] = linksSet.linksB
-}
-
-trait LinkingConverter[T <: HasName] {
-  def convert(implicit config: Config, linksSet: LinksSet): T
+trait DilatedConverter[T] {
+  def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): T
 }
 
 class ConfigGetOption[T](func: (Config, String) => T) {

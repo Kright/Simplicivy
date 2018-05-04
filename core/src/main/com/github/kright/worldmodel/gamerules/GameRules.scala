@@ -19,6 +19,11 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
+import com.typesafe.config.Config
+
+import scala.collection.mutable
+
 /**
   * Created by Igor Slobodskov on 27 April 2018
   *
@@ -33,30 +38,71 @@ package com.github.kright.worldmodel.gamerules
 trait GameRules {
 
   // pure classes, don't hold links to other structures
-  def technologies: Seq[TechnologyDescription]
+  def technologies: GameRulesHolder[TechnologyDescription]
 
-  def terrainTypes: Seq[TerrainType]
+  def terrainTypes: GameRulesHolder[TerrainType]
 
   // uses techs and terrain types
-  def resources: Seq[ResourceType]
+  def resources: GameRulesHolder[ResourceType]
 
   // uses someself, resources and technologies
-  def cityBuildings: Seq[CityBuildingType]
+  def cityBuildings: GameRulesHolder[CityBuildingType]
 
   // uses terrain types
-  def langUpgradeTypes: Seq[LandUpgradeType]
+  def langUpgradeTypes: GameRulesHolder[LandUpgradeType]
 
   // uses tech, resources, cityBuildingTypes, and itself
-  def unitTypes: Seq[GameUnitType]
+  def unitTypes: GameRulesHolder[GameUnitType]
 
   // uses techs, unitTypes, cityBuildings
-  def nations: Seq[Nation]
+  def nations: GameRulesHolder[Nation]
 }
 
-class GameRulesImpl(var technologies: Seq[TechnologyDescription],
-                    var terrainTypes: Seq[TerrainType],
-                    var resources: Seq[ResourceType],
-                    var cityBuildings: Seq[CityBuildingType],
-                    var langUpgradeTypes: Seq[LandUpgradeType],
-                    var unitTypes: Seq[GameUnitType],
-                    var nations: Seq[Nation]) extends GameRules
+class GameRulesHolder[T <: HasName] {
+  private val map = new mutable.HashMap[String, T]()
+  private val lst = new mutable.ArrayBuffer[T]()
+
+  def apply(name: String): T = map(name)
+
+  def ++=(values: Seq[T]): Unit = {
+    lst ++= values
+    map ++= values.map(v => (v.name, v))
+  }
+
+  def all: Seq[T] = lst
+}
+
+class GameRulesImpl() extends GameRules {
+  var technologies: GameRulesHolder[TechnologyDescription] = new GameRulesHolder()
+  var terrainTypes: GameRulesHolder[TerrainType] = new GameRulesHolder()
+  var resources: GameRulesHolder[ResourceType] = new GameRulesHolder()
+  var cityBuildings: GameRulesHolder[CityBuildingType] = new GameRulesHolder()
+  var langUpgradeTypes: GameRulesHolder[LandUpgradeType] = new GameRulesHolder()
+  var unitTypes: GameRulesHolder[GameUnitType] = new GameRulesHolder()
+  var nations: GameRulesHolder[Nation] = new GameRulesHolder()
+}
+
+
+object GameRules extends ConfigConverter[GameRulesImpl] {
+
+  import ConfigLoader._
+  import scala.collection.JavaConverters._
+
+  override def convert(config: Config): GameRulesImpl = {
+
+    implicit val gameRules = new GameRulesImpl()
+    implicit val linking = new DilatedExecutor()
+
+    gameRules.technologies ++= config.getConfigList("technologies").asScala.map(_.asLinked[TechnologyDescriptionImpl])
+    gameRules.terrainTypes ++= config.getConfigList("terrainTypes").asScala.map(_.as[TerrainTypeImpl])
+
+    gameRules.resources ++= config.getConfigList("resources").asScala.map(_.asLinked[ResourceTypeImpl])
+    gameRules.cityBuildings ++= config.getConfigList("cityBuildings").asScala.map(_.asLinked[CityBuildingTypeImpl])
+
+    gameRules.langUpgradeTypes ++= config.getConfigList("landUpgrades").asScala.map(_.asLinked[LandUpgradeTypeImpl])
+
+    linking.execute()
+
+    gameRules
+  }
+}
