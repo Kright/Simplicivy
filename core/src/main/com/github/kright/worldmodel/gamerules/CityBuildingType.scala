@@ -19,6 +19,8 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.typesafe.config.Config
+
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
@@ -35,6 +37,7 @@ trait CityBuildingType extends HasName {
 class CityBuildingTypeImpl(var name: String,
                            var requires: RequirementForCityProduction,
                            var buildingEffect: BuildingEffect) extends CityBuildingType
+
 
 trait BuildingEffect {
 
@@ -68,3 +71,20 @@ class BuildingEffectImpl(var maintenance: Int,
                          var defenceBonus: Int,
                          var corruptionDecrease: Int,
                          var pollution: Int) extends BuildingEffect
+
+object BuildingEffect extends ConfigConverter[BuildingEffectImpl] {
+  override def convert(config: Config): BuildingEffectImpl = {
+    implicit def parseOr0(s: String): Int = if (config.hasPath(s)) config.getInt(s) else 0
+
+    new BuildingEffectImpl(
+      "maintenance",
+      "happiness",
+      "culture",
+      "taxBonus",
+      "researchBonus",
+      "productionBonus",
+      "defenceBonus",
+      "corruptionDecrease",
+      "pollution")
+  }
+}

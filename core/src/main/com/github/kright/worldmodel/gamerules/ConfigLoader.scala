@@ -20,7 +20,7 @@
 package com.github.kright.worldmodel.gamerules
 
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{Config, ConfigException, ConfigFactory}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -33,20 +33,45 @@ object ConfigLoader {
 
   import LinksSet._
 
-  implicit class ConfigExt(val config: Config) extends AnyVal {
-    def as[T](implicit converter: ConfigConverter[T]): T = converter.convert(config)
 
-    def link[T <: HasName](name: String)(implicit linkSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): T = {
-      linkSet.link(name, config)
+  implicit class ConfigExt(val config: Config) extends AnyVal {
+    def as[T](implicit converter: ConfigConverter[T]): T = {
+      try {
+        converter.convert(config)
+      } catch {
+        case ex: ConfigException.Missing =>
+          throw new ParsingError(s"${ex.getMessage} at line ${config.origin().lineNumber()} in $config")
+        case ex: ConfigException.WrongType =>
+          throw new ParsingError(s"${ex.getMessage} in $config")
+      }
     }
+
+    def link[T <: HasName](name: String)(implicit linkSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): T =
+      linkSet.link(name, config)
 
     def asLinked[T <: HasName](implicit converter: LinkingConverter[T], linksSet: LinksSet): T =
       converter.convert(config, linksSet)
+
+    def get[T](path: String)(implicit getOption: ConfigGetOption[T]): Option[T] =
+      getOption.read(config, path)
   }
 
   implicit val converterA: ConfigConverter[A] = new ConfigConverter[A] {
     override def convert(config: Config): A = new A(config.getInt("a"), config.getString("name"))
   }
+
+  implicit val converterB: LinkingConverter[B] = new LinkingConverter[B] {
+    override def convert(implicit config: Config, linksSet: LinksSet): B =
+      new B(null, config.getString("name")) {
+        this.doLate {
+          a = config.link[A]("a")
+        }
+      }
+  }
+
+  implicit val converterCellProduction: ConfigConverter[MutableCellProduction] = CellProduction
+  implicit val converterBuildingEffectImpl: ConfigConverter[BuildingEffectImpl] = BuildingEffect
+  implicit val converterTerrainTypeImpl: ConfigConverter[TerrainTypeImpl] = TerrainType
 
   implicit class HasNameExt[T <: HasName](val a: T) extends AnyVal {
     def doLate(func: => Unit)(implicit linkSet: LinksSet): Unit = {
@@ -54,15 +79,7 @@ object ConfigLoader {
     }
   }
 
-  implicit val converterB: LinkingConverter[B] = new LinkingConverter[B] {
-    override def convert(implicit config: Config, linksSet: LinksSet): B = {
-      new B(null, config.getString("name")) {
-        this.doLate {
-          a = config.link[A]("a")
-        }
-      }
-    }
-  }
+  implicit val intConverter = new ConfigGetOption[Int](_.getInt(_))
 
   def test(): Unit = {
 
@@ -77,7 +94,14 @@ object ConfigLoader {
         |  listB = [
         |   {name = b0, a = a0}
         |   {name = b1, a = a1}
+        |   {name = b2}
         |  ]
+        |}
+        |
+        |cellProduction {
+        |  food = 2
+        |  production = 3
+        |  commerce = 1
         |}
       """.stripMargin
 
@@ -85,9 +109,12 @@ object ConfigLoader {
     implicit val linkSet: LinksSet = new LinksSet()
 
     val config = ConfigFactory.parseString(str)
+
     val gameRules = config.getConfig("gameRules")
     val listA = gameRules.getConfigList("listA").asScala.map(_.as[A])
     val listB = gameRules.getConfigList("listB").asScala.map(_.asLinked[B])
+
+    val cellProduction = config.getConfig("cellProduction").as[MutableCellProduction]
 
     linkSet.linksA.addValues(listA)
     linkSet.linksB.addValues(listB)
@@ -101,6 +128,8 @@ object ConfigLoader {
   }
 }
 
+class ParsingError(msg: String) extends RuntimeException(msg)
+
 class A(var a: Int, var name: String) extends HasName {
   override def toString: String = s"A($a,$name)"
 }
@@ -112,7 +141,13 @@ class B(var a: A, var name: String) extends HasName {
 class LinkHolder[T <: HasName] {
   val values = new mutable.HashMap[String, T]()
 
-  def link(name: String, config: Config): T = values(config.getString(name))
+  def link(name: String, config: Config): T = {
+    if (config.hasPath(name)) {
+      values(config.getString(name))
+    } else {
+      throw new ParsingError(s"field '$name' at line ${config.origin().lineNumber()} in $config not found")
+    }
+  }
 
   def addValues(vv: Seq[T]): Unit = vv.foreach { v => values(v.name) = v }
 }
@@ -142,8 +177,9 @@ trait LinkingConverter[T <: HasName] {
   def convert(implicit config: Config, linksSet: LinksSet): T
 }
 
-abstract class ConfigReader[A] {
-  def read(config: Config, path: String): Option[A]
+class ConfigGetOption[T](func: (Config, String) => T) {
+  def read(config: Config, path: String): Option[T] =
+    if (config.hasPath(path)) Option(func(config, path)) else None
 }
 
 trait ConfigConverter[T] {

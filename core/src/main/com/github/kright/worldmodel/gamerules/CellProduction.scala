@@ -19,6 +19,8 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.typesafe.config.Config
+
 /**
   * Created by Igor Slobodskov on 28 April 2018
   */
@@ -34,3 +36,11 @@ trait CellProduction {
 class MutableCellProduction(var food: Int,
                             var production: Int,
                             var commerce: Int) extends CellProduction
+
+object CellProduction extends ConfigConverter[MutableCellProduction] {
+  override def convert(config: Config): MutableCellProduction =
+    new MutableCellProduction(
+      food = config.getInt("food"),
+      production = config.getInt("production"),
+      commerce = config.getInt("commerce"))
+}

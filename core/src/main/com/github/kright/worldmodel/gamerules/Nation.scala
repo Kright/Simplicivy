@@ -58,7 +58,8 @@ trait NationFeatures {
 }
 
 
-class Modification[T](val remove: Set[T],
+class Modification[T](val removeAll: Boolean,
+                      val remove: Set[T],
                       val swap: Map[T, T],
                       val add: Seq[T])
 

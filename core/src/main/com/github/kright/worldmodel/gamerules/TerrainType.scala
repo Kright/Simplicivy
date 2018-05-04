@@ -19,6 +19,8 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.typesafe.config.Config
+
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
@@ -51,5 +53,21 @@ class TerrainTypeImpl(var name: String,
                       var produces: MutableCellProduction) extends TerrainType {
   def this() {
     this(null, true, 0, 0, 0, null)
+  }
+}
+
+object TerrainType extends ConfigConverter[TerrainTypeImpl] {
+
+  import ConfigLoader._
+
+  override def convert(config: Config): TerrainTypeImpl = {
+
+    new TerrainTypeImpl(config.getString("name"),
+      config.getBoolean("isLand"),
+      config.getInt("height"),
+      config.getInt("movementCost"),
+      config.getInt("defenceBonus"),
+      config.getConfig("produces").as[MutableCellProduction]
+    )
   }
 }
