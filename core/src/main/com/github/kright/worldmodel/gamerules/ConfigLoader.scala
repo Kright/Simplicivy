@@ -31,36 +31,40 @@ import scala.collection.mutable.ArrayBuffer
   */
 object ConfigLoader {
 
-  /*
-  требования к конфигу: по возможности простой код
-  линковка данных
-  вывод понятных ошибок, если что-то не так.
-   */
+  import LinksSet._
 
   implicit class ConfigExt(val config: Config) extends AnyVal {
     def as[T](implicit converter: ConfigConverter[T]): T = converter.convert(config)
 
-    def link[T <: HasName](name: String, setter: T => Unit)(implicit linkHolder: LinkHolder[T]) =
-      linkHolder.links += new Binding[T](setter, config.getString(name))
+    def link[T <: HasName](name: String)(implicit linkSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): T = {
+      linkSet.link(name, config)
+    }
 
-    def asLinked[T <: HasName](implicit converter: LinkingConverter[T], linksSet: LinksSet) =
+    def asLinked[T <: HasName](implicit converter: LinkingConverter[T], linksSet: LinksSet): T =
       converter.convert(config, linksSet)
   }
 
-  implicit val converterA = new ConfigConverter[A] {
+  implicit val converterA: ConfigConverter[A] = new ConfigConverter[A] {
     override def convert(config: Config): A = new A(config.getInt("a"), config.getString("name"))
   }
 
-  implicit val converterB = new LinkingConverter[B] {
-    override def convert(config: Config, linksSet: LinksSet): B = {
-      implicit val ah = linksSet.linksA
-      val b = new B(null, config.getString("name"))
-      config.link("a", b.a_=)
-      b
+  implicit class HasNameExt[T <: HasName](val a: T) extends AnyVal {
+    def doLate(func: => Unit)(implicit linkSet: LinksSet): Unit = {
+      linkSet.addCallback { () => func }
     }
   }
 
-  def test() = {
+  implicit val converterB: LinkingConverter[B] = new LinkingConverter[B] {
+    override def convert(implicit config: Config, linksSet: LinksSet): B = {
+      new B(null, config.getString("name")) {
+        this.doLate {
+          a = config.link[A]("a")
+        }
+      }
+    }
+  }
+
+  def test(): Unit = {
 
     def str =
       """
@@ -78,7 +82,7 @@ object ConfigLoader {
       """.stripMargin
 
 
-    implicit val linkSet = new LinksSet()
+    implicit val linkSet: LinksSet = new LinksSet()
 
     val config = ConfigFactory.parseString(str)
     val gameRules = config.getConfig("gameRules")
@@ -88,8 +92,7 @@ object ConfigLoader {
     linkSet.linksA.addValues(listA)
     linkSet.linksB.addValues(listB)
 
-    linkSet.linksA.resolveLinks()
-    linkSet.linksB.resolveLinks()
+    linkSet.resolveLinks()
 
     println(listA.mkString(","))
     println(listB.mkString(","))
@@ -108,37 +111,41 @@ class B(var a: A, var name: String) extends HasName {
 
 class LinkHolder[T <: HasName] {
   val values = new mutable.HashMap[String, T]()
-  val links = new ArrayBuffer[Binding[T]]()
 
-  def resolveLinks(): Unit = links.foreach(_.bind(values))
+  def link(name: String, config: Config): T = values(config.getString(name))
 
-  def addValues(vv: Seq[T]) = vv.foreach { v => values(v.name) = v }
+  def addValues(vv: Seq[T]): Unit = vv.foreach { v => values(v.name) = v }
 }
 
 class LinksSet {
   val linksA = new LinkHolder[A]
   val linksB = new LinkHolder[B]
+
+  def linkA(s: String): A = linksA.values(s)
+
+  def linkB(s: String): B = linksB.values(s)
+
+  private val callBacks = new ArrayBuffer[() => Unit]()
+
+  def addCallback(func: () => Unit): Unit = callBacks += func
+
+  def resolveLinks(): Unit = callBacks.foreach(f => f())
+}
+
+object LinksSet {
+  implicit def toHolderA(linksSet: LinksSet): LinkHolder[A] = linksSet.linksA
+
+  implicit def toHolderB(linksSet: LinksSet): LinkHolder[B] = linksSet.linksB
 }
 
 trait LinkingConverter[T <: HasName] {
-  def convert(config: Config, linksSet: LinksSet): T
+  def convert(implicit config: Config, linksSet: LinksSet): T
 }
 
-trait ConfigReader[A] {
+abstract class ConfigReader[A] {
   def read(config: Config, path: String): Option[A]
 }
 
 trait ConfigConverter[T] {
   def convert(config: Config): T
-}
-
-trait ConfigConvererWithLinkage[T] {
-
-}
-
-class Binding[T](val setter: (T) => Unit, val name: String) {
-  def bind(mapping: (String) => T): Unit = setter(mapping(name))
-}
-
-object ConfigReader {
 }
