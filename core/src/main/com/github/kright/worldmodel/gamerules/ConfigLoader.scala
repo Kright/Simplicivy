@@ -20,9 +20,11 @@
 package com.github.kright.worldmodel.gamerules
 
 
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigFactory}
 
-import scala.util.Try
+import scala.collection.JavaConverters._
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 /**
   * Created by Igor Slobodskov on 02 May 2018
@@ -36,40 +38,105 @@ object ConfigLoader {
    */
 
   implicit class ConfigExt(val config: Config) extends AnyVal {
-    def as[T](implicit converter: ConfigConverter[T]): Either[T, ConfigError] = converter.convert(config)
+    def as[T](implicit converter: ConfigConverter[T]): T = converter.convert(config)
+
+    def link[T <: HasName](name: String, setter: T => Unit)(implicit linkHolder: LinkHolder[T]) =
+      linkHolder.links += new Binding[T](setter, config.getString(name))
+
+    def asLinked[T <: HasName](implicit converter: LinkingConverter[T], linksSet: LinksSet) =
+      converter.convert(config, linksSet)
+  }
+
+  implicit val converterA = new ConfigConverter[A] {
+    override def convert(config: Config): A = new A(config.getInt("a"), config.getString("name"))
+  }
+
+  implicit val converterB = new LinkingConverter[B] {
+    override def convert(config: Config, linksSet: LinksSet): B = {
+      implicit val ah = linksSet.linksA
+      val b = new B(null, config.getString("name"))
+      config.link("a", b.a_=)
+      b
+    }
   }
 
   def test() = {
 
     def str =
       """
-        |listA = [
-        |   { name = "a0", a = 0}
-        |   { name = "a1", a = 1}
-        |]
+        |gameRules {
+        |  listA = [
+        |    { name = "a0", a = 0}
+        |    { name = "a1", a = 1}
+        |  ]
         |
-        |b = {name = 2, a = a0}
+        |  listB = [
+        |   {name = b0, a = a0}
+        |   {name = b1, a = a1}
+        |  ]
+        |}
       """.stripMargin
+
+
+    implicit val linkSet = new LinksSet()
+
+    val config = ConfigFactory.parseString(str)
+    val gameRules = config.getConfig("gameRules")
+    val listA = gameRules.getConfigList("listA").asScala.map(_.as[A])
+    val listB = gameRules.getConfigList("listB").asScala.map(_.asLinked[B])
+
+    linkSet.linksA.addValues(listA)
+    linkSet.linksB.addValues(listB)
+
+    linkSet.linksA.resolveLinks()
+    linkSet.linksB.resolveLinks()
+
+    println(listA.mkString(","))
+    println(listB.mkString(","))
 
     println("Hello world!")
   }
 }
 
-class A(a: Int, name: String)
+class A(var a: Int, var name: String) extends HasName {
+  override def toString: String = s"A($a,$name)"
+}
 
-class B(a: A, name: String)
+class B(var a: A, var name: String) extends HasName {
+  override def toString: String = s"B($a,$name)"
+}
 
-class ConfigError(reason: String) extends RuntimeException
+class LinkHolder[T <: HasName] {
+  val values = new mutable.HashMap[String, T]()
+  val links = new ArrayBuffer[Binding[T]]()
+
+  def resolveLinks(): Unit = links.foreach(_.bind(values))
+
+  def addValues(vv: Seq[T]) = vv.foreach { v => values(v.name) = v }
+}
+
+class LinksSet {
+  val linksA = new LinkHolder[A]
+  val linksB = new LinkHolder[B]
+}
+
+trait LinkingConverter[T <: HasName] {
+  def convert(config: Config, linksSet: LinksSet): T
+}
 
 trait ConfigReader[A] {
   def read(config: Config, path: String): Option[A]
 }
 
-trait ConfigConverter[A] {
-  def convert(config: Config): Either[A, ConfigError]
+trait ConfigConverter[T] {
+  def convert(config: Config): T
 }
 
-private class Binding[T](val setter: (T) => Unit, val name: String) {
+trait ConfigConvererWithLinkage[T] {
+
+}
+
+class Binding[T](val setter: (T) => Unit, val name: String) {
   def bind(mapping: (String) => T): Unit = setter(mapping(name))
 }
 
