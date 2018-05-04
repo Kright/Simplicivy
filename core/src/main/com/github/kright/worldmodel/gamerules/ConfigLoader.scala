@@ -21,7 +21,7 @@ package com.github.kright.worldmodel.gamerules
 
 
 import com.github.kright.utils.DilatedExecutor
-import com.typesafe.config.{Config, ConfigException, ConfigFactory}
+import com.typesafe.config.{Config, ConfigException, ConfigValueType}
 
 import scala.collection.JavaConverters._
 
@@ -31,9 +31,10 @@ import scala.collection.JavaConverters._
 object ConfigLoader {
 
   implicit class ConfigExt(val config: Config) extends AnyVal {
-    def as[T](implicit converter: ConfigConverter[T]): T = {
+
+    def catchErrors[T](func: => T): T = {
       try {
-        converter.convert(config)
+        func
       } catch {
         case ex: ConfigException.Missing =>
           throw new ParsingError(s"${ex.getMessage} at line ${config.origin().lineNumber()} in $config")
@@ -42,11 +43,19 @@ object ConfigLoader {
       }
     }
 
+    def as[T](implicit converter: ConfigConverter[T]): T = {
+      catchErrors(converter.convert(config))
+    }
+
     def getAs[T](path: String)(implicit converter: ConfigConverter[T]): T = config.getConfig(path).as[T]
 
     def getStrings(path: String): Seq[String] =
       if (config.hasPath(path)) {
-        config.getStringList(path).asScala
+        config.getValue(path).valueType() match {
+          case ConfigValueType.STRING => Seq(config.getString(path))
+          case ConfigValueType.LIST => config.getStringList(path).asScala
+          case _ => ???
+        }
       } else {
         List.empty
       }
@@ -60,10 +69,10 @@ object ConfigLoader {
 
 
     def asLinked[T](implicit converter: DilatedConverter[T], gameRules: GameRules, dilatedExecutor: DilatedExecutor): T =
-      converter.convert(config, gameRules, dilatedExecutor)
+      catchErrors(converter.convert(config, gameRules, dilatedExecutor))
 
     def asLinked[T](path: String)(implicit converter: DilatedConverter[T], gameRules: GameRules, dilatedExecutor: DilatedExecutor): T =
-      converter.convert(config.getConfig("path"), gameRules, dilatedExecutor)
+      catchErrors(converter.convert(config.getConfig(path), gameRules, dilatedExecutor))
 
     def getOption[T](path: String)(implicit getOption: ConfigGetOption[T]): Option[T] =
       getOption.read(config, path)

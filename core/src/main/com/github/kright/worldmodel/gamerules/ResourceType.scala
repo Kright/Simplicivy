@@ -46,7 +46,7 @@ case object StrategicResource extends ResourceKind
 
 case object LuxuryResource extends ResourceKind
 
-class ResourceTypeImpl(var name: String,
+class ResourceTypeImpl(val name: String,
                        var resourceKind: ResourceKind,
                        var requiredTerrain: mutable.Set[TerrainType],
                        var requiredTechnology: Option[TechnologyDescription],
@@ -57,19 +57,19 @@ object ResourceType extends DilatedConverter[ResourceTypeImpl] {
   import ConfigLoader._
 
   override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): ResourceTypeImpl = {
-    new ResourceTypeImpl(config.getString("name"),
-      config.getString("kind") match {
+    new ResourceTypeImpl(name = config.getString("name"),
+      resourceKind = config.getString("kind") match {
         case "bonus" => BonusResource
         case "strategic" => StrategicResource
         case "luxury" => LuxuryResource
       },
-      new mutable.HashSet[TerrainType](),
-      None,
+      requiredTerrain = new mutable.HashSet[TerrainType](),
+      requiredTechnology = None,
       cellBonus = config.getConfig("bonus").as[MutableCellProduction]
     ) {
       this.doLate {
         requiredTerrain ++= config.getStrings("terrain").map(gameRules.terrainTypes(_))
-        requiredTechnology = config.getOption[String]("requiredTechnology").map(gameRules.technologies(_))
+        requiredTechnology = config.getOption[String]("technology").map(gameRules.technologies(_))
       }
     }
   }

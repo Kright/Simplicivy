@@ -33,7 +33,8 @@ trait TerrainType extends HasName {
 
   /**
     * will be used for visibility calculations
-    * 0 for water, 1 for land, 2 for hills, 3 for mountains
+    * height <= 0 for water, 1 for land, 2 for hills, 3 for mountains
+    * for water height is a depth
     * When you stay on mountain above plain land, you can see farther
     */
   def height: Int
@@ -65,8 +66,8 @@ object TerrainType extends ConfigConverter[TerrainTypeImpl] {
     new TerrainTypeImpl(config.getString("name"),
       config.getBoolean("isLand"),
       config.getInt("height"),
-      config.getInt("movementCost"),
-      config.getInt("defenceBonus"),
+      config.getOption[Int]("movementCost").getOrElse(1),
+      config.getOption[Int]("defenceBonus").getOrElse(0),
       config.getConfig("produces").as[MutableCellProduction]
     )
   }

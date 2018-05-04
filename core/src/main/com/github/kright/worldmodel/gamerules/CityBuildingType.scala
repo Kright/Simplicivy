@@ -40,18 +40,6 @@ class CityBuildingTypeImpl(var name: String,
                            var buildingEffect: BuildingEffect) extends CityBuildingType
 
 
-object CityBuildingType extends DilatedConverter[CityBuildingTypeImpl] {
-
-  import ConfigLoader._
-
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): CityBuildingTypeImpl = {
-    new CityBuildingTypeImpl(config.getString("name"),
-      config.asLinked[RequirementForCityProduction]("requires"),
-      config.getAs[BuildingEffectImpl]("effects"))
-  }
-}
-
-
 trait BuildingEffect {
 
   def maintenance: Int
@@ -84,6 +72,19 @@ class BuildingEffectImpl(var maintenance: Int,
                          var defenceBonus: Int,
                          var corruptionDecrease: Int,
                          var pollution: Int) extends BuildingEffect
+
+
+object CityBuildingType extends DilatedConverter[CityBuildingTypeImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): CityBuildingTypeImpl = {
+    new CityBuildingTypeImpl(config.getString("name"),
+      config.asLinked[RequirementForCityProduction]("requires"),
+      config.getAs[BuildingEffectImpl]("effects"))
+  }
+}
+
 
 object BuildingEffect extends ConfigConverter[BuildingEffectImpl] {
   override def convert(config: Config): BuildingEffectImpl = {

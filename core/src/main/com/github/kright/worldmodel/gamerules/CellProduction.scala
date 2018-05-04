@@ -38,9 +38,13 @@ class MutableCellProduction(var food: Int,
                             var commerce: Int) extends CellProduction
 
 object CellProduction extends ConfigConverter[MutableCellProduction] {
-  override def convert(config: Config): MutableCellProduction =
+  override def convert(config: Config): MutableCellProduction = {
+    import ConfigLoader._
+    implicit def str2int(s: String) = config.getOption[Int](s).getOrElse(0)
+
     new MutableCellProduction(
-      food = config.getInt("food"),
-      production = config.getInt("production"),
-      commerce = config.getInt("commerce"))
+      food = "food",
+      production = "production",
+      commerce = "commerce")
+  }
 }

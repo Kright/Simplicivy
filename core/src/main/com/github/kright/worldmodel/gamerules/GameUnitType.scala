@@ -54,7 +54,7 @@ trait GameUnitType extends HasName {
   /* ability to carry units */
   def maxCarriedUnits: Int
 
-  def cost: Int
+  def cost: Int = requirements.cost
 
   def maintenanceCost: Int
 
@@ -136,7 +136,6 @@ class GameUnitTypeImpl(var name: String,
                        var antiAirDefence: Option[AntiAirDefence],
                        var visibilityModel: VisibilityModel,
                        var maxCarriedUnits: Int,
-                       var cost: Int,
                        var maintenanceCost: Int,
                        var possibleActions: ArrayBuffer[GameUnitActionType],
                        var requirements: RequirementForCityProduction,
@@ -159,10 +158,9 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       rangeAttack = config.getOption[Config]("rangeAttack").map(_.rangeAttack),
       airBombardment = config.getOption[Config]("airBombardment").map(_.airBombardment),
       antiAirDefence = config.getOption[Config]("antiAirDefence").map(_.antiAirDefence),
-      visibilityModel = config.getConfig("visibilityModel").visibility,
+      visibilityModel = config.getOption[Config]("visibilityModel").map(_.visibility).getOrElse(DirectVisibility),
       maxCarriedUnits = config.getOption[Int]("carriedUnits").getOrElse(0),
-      cost = config.getInt("cost"),
-      maintenanceCost = config.getInt("cost"),
+      maintenanceCost = config.getInt("maintenance"),
       possibleActions = new ArrayBuffer[GameUnitActionType](), //todo,
       requirements = config.asLinked[RequirementForCityProduction]("requirements"),
       upgradesTo = new ArrayBuffer[GameUnitType]()
@@ -186,7 +184,7 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       case "air" => Air
     }
 
-    def level: GameUnitLevel = new GameUnitLevel(c.getInt("experience"), c.getInt("maxHP"))
+    def level: GameUnitLevel = new GameUnitLevel(c.getInt("exp"), c.getInt("hp"))
 
     def meleeCombat: MeleeCombat = new MeleeCombat(
       c.getInt("attack"),
@@ -195,11 +193,15 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       c.getOption[Boolean]("canAttackFromWater").getOrElse(false)
     )
 
-    def rangeAttack: RangeAttack =
-      new RangeAttack(c.getInt("strength"), c.getInt("range"), c.getInt("attacksPerMove"))
+    def rangeAttack: RangeAttack = new RangeAttack(
+      c.getInt("strength"),
+      c.getInt("range"),
+      c.getOption[Int]("attacksPerMove").getOrElse(1))
 
-    def airBombardment: AirBombardment =
-      new AirBombardment(c.getInt("strength"), c.getInt("range"), c.getInt("antiAirDefence"))
+    def airBombardment: AirBombardment = new AirBombardment(
+      c.getInt("strength"),
+      c.getInt("range"),
+      c.getInt("antiAirDefence"))
 
     def antiAirDefence: AntiAirDefence =
       new AntiAirDefence(defence = c.getInt("defence"), defenceRange = c.getInt("defenceRange"))
@@ -209,4 +211,5 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       case "radar" => RadarModel(c.getInt("distance"))
     }
   }
+
 }

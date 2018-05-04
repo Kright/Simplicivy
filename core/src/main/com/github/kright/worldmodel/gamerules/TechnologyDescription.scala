@@ -53,7 +53,7 @@ object TechnologyDescription extends DilatedConverter[TechnologyDescriptionImpl]
   override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): TechnologyDescriptionImpl =
     new TechnologyDescriptionImpl(
       config.getString("name"),
-      config.getInt("scienceCost")) {
+      config.getInt("cost")) {
       this.doLate {
         requiredTechnologies ++= config.getStrings("requiredTechnologies").map(gameRules.technologies(_))
       }
