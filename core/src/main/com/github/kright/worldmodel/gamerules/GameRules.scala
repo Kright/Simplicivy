@@ -100,6 +100,7 @@ object GameRules extends ConfigConverter[GameRulesImpl] {
     gameRules.cityBuildings ++= config.getConfigList("cityBuildings").asScala.map(_.asLinked[CityBuildingTypeImpl])
 
     gameRules.langUpgradeTypes ++= config.getConfigList("landUpgrades").asScala.map(_.asLinked[LandUpgradeTypeImpl])
+    gameRules.unitTypes ++= config.getConfigList("units").asScala.map(_.asLinked[GameUnitTypeImpl])
 
     linking.execute()
 

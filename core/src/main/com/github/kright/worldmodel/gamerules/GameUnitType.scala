@@ -19,6 +19,11 @@
 
 package com.github.kright.worldmodel.gamerules
 
+import com.github.kright.utils.DilatedExecutor
+import com.typesafe.config.Config
+
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
@@ -89,7 +94,7 @@ class WaterMoving(val moves: Int,
   * some units (like tanks or catapults) can't move in mountains without roads
   */
 class LandMoving(val moves: Int,
-                 val onlyOnRoads: Seq[TerrainType])
+                 val onlyOnRoads: Set[TerrainType])
 
 
 /**
@@ -118,3 +123,90 @@ case object Land extends MovingEnvironment
 case object Water extends MovingEnvironment
 
 case object Air extends MovingEnvironment
+
+class GameUnitTypeImpl(var name: String,
+                       var movingOn: MovingEnvironment,
+                       var isMilitary: Boolean,
+                       var levels: Seq[GameUnitLevel],
+                       var landMoves: Option[LandMoving],
+                       var seaMoves: Option[WaterMoving],
+                       var meleeCombat: Option[MeleeCombat],
+                       var rangeAttack: Option[RangeAttack],
+                       var airBombardment: Option[AirBombardment],
+                       var antiAirDefence: Option[AntiAirDefence],
+                       var visibilityModel: VisibilityModel,
+                       var maxCarriedUnits: Int,
+                       var cost: Int,
+                       var maintenanceCost: Int,
+                       var possibleActions: ArrayBuffer[GameUnitActionType],
+                       var requirements: RequirementForCityProduction,
+                       var upgradesTo: ArrayBuffer[GameUnitType]) extends GameUnitType {}
+
+
+object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
+
+  import ConfigLoader._
+
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): GameUnitTypeImpl = {
+    new GameUnitTypeImpl(
+      name = config.getString("name"),
+      movingOn = config.moveEnv("moveOn"),
+      isMilitary = config.getBoolean("military"),
+      levels = config.getConfigs("levels").map(_.level),
+      landMoves = null, // LandMoves
+      seaMoves = config.getOption[Config]("seaMoves").map(c => new WaterMoving(c.getInt("moves"), c.getInt("maxDepth"))),
+      meleeCombat = config.getOption[Config]("meleeCombat").map(_.meleeCombat),
+      rangeAttack = config.getOption[Config]("rangeAttack").map(_.rangeAttack),
+      airBombardment = config.getOption[Config]("airBombardment").map(_.airBombardment),
+      antiAirDefence = config.getOption[Config]("antiAirDefence").map(_.antiAirDefence),
+      visibilityModel = config.getConfig("visibilityModel").visibility,
+      maxCarriedUnits = config.getOption[Int]("carriedUnits").getOrElse(0),
+      cost = config.getInt("cost"),
+      maintenanceCost = config.getInt("cost"),
+      possibleActions = new ArrayBuffer[GameUnitActionType](), //todo,
+      requirements = config.asLinked[RequirementForCityProduction]("requirements"),
+      upgradesTo = new ArrayBuffer[GameUnitType]()
+    ) {
+      this.doLate {
+        landMoves = config.getOption[Config]("landMoves").map { c =>
+          new LandMoving(
+            c.getInt("moves"),
+            c.getStrings("onlyOnRoads").map(gameRules.terrainTypes(_)).toSet)
+        }
+
+        upgradesTo ++= config.getStrings("upgradesTo").map(gameRules.unitTypes(_))
+      }
+    }
+  }
+
+  private implicit class ConfigInnerExt(val c: Config) extends AnyVal {
+    def moveEnv(path: String): MovingEnvironment = c.getString(path) match {
+      case "land" => Land
+      case "water" => Water
+      case "air" => Air
+    }
+
+    def level: GameUnitLevel = new GameUnitLevel(c.getInt("experience"), c.getInt("maxHP"))
+
+    def meleeCombat: MeleeCombat = new MeleeCombat(
+      c.getInt("attack"),
+      c.getInt("defence"),
+      c.getOption[Int]("attacksPerMove").getOrElse(1),
+      c.getOption[Boolean]("canAttackFromWater").getOrElse(false)
+    )
+
+    def rangeAttack: RangeAttack =
+      new RangeAttack(c.getInt("strength"), c.getInt("range"), c.getInt("attacksPerMove"))
+
+    def airBombardment: AirBombardment =
+      new AirBombardment(c.getInt("strength"), c.getInt("range"), c.getInt("antiAirDefence"))
+
+    def antiAirDefence: AntiAirDefence =
+      new AntiAirDefence(defence = c.getInt("defence"), defenceRange = c.getInt("defenceRange"))
+
+    def visibility: VisibilityModel = c.getString("type") match {
+      case "eyes" => DirectVisibility
+      case "radar" => RadarModel(c.getInt("distance"))
+    }
+  }
+}

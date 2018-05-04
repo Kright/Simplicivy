@@ -24,8 +24,6 @@ import com.github.kright.utils.DilatedExecutor
 import com.typesafe.config.{Config, ConfigException, ConfigFactory}
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 
 /**
   * Created by Igor Slobodskov on 02 May 2018
@@ -46,16 +44,16 @@ object ConfigLoader {
 
     def getAs[T](path: String)(implicit converter: ConfigConverter[T]): T = config.getConfig(path).as[T]
 
-    //
-    //    def link[T <: HasName](name: String)(implicit linkSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): T =
-    //      linkSet.link(name, config)
-    //
-    //    def linkList[T <: HasName](name: String)(implicit linksSet: LinksSet, toHolder: (LinksSet) => LinkHolder[T]): Seq[T] =
-    //      linksSet.linkList(name, config)
-
     def getStrings(path: String): Seq[String] =
       if (config.hasPath(path)) {
         config.getStringList(path).asScala
+      } else {
+        List.empty
+      }
+
+    def getConfigs(path: String): Seq[Config] =
+      if (config.hasPath(path)) {
+        config.getConfigList(path).asScala
       } else {
         List.empty
       }
@@ -86,10 +84,13 @@ object ConfigLoader {
   implicit val converterRequirementForCityProduction: DilatedConverter[RequirementForCityProduction] = RequirementForCityProduction
   implicit val converterCityBuildingType: DilatedConverter[CityBuildingTypeImpl] = CityBuildingType
   implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeTypeImpl] = LandUpgradeType
+  implicit val converterGameUnitType: DilatedConverter[GameUnitTypeImpl] = GameUnitType
+
 
   implicit val getIntOption = new ConfigGetOption[Int](_.getInt(_))
   implicit val getStringOption = new ConfigGetOption[String](_.getString(_))
   implicit val getBooleanOption = new ConfigGetOption[Boolean](_.getBoolean(_))
+  implicit val getConfigOption = new ConfigGetOption[Config](_.getConfig(_))
 }
 
 class ParsingError(msg: String) extends RuntimeException(msg)
