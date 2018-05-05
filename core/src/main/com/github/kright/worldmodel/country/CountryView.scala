@@ -19,8 +19,8 @@
 
 package com.github.kright.worldmodel.country
 
-import com.github.kright.worldmodel.city.City
-import com.github.kright.worldmodel.gamerules.Nation
+import com.github.kright.worldmodel.city.CityView
+import com.github.kright.worldmodel.gamerules.NationView
 import com.github.kright.worldmodel.worldmap.PlayerMapView
 
 /**
@@ -30,9 +30,9 @@ trait CountryView {
 
   def player: Player
 
-  def nation: Nation
+  def nation: NationView
 
   def units: Seq[Unit]
 
-  def cities: Seq[City]
+  def cities: Seq[CityView]
 }

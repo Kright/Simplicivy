@@ -19,7 +19,7 @@
 
 package com.github.kright.worldmodel.science
 
-import com.github.kright.worldmodel.gamerules.{GameRules, TechnologyDescription}
+import com.github.kright.worldmodel.gamerules.{GameRules, TechnologyDescriptionView}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -31,14 +31,14 @@ private class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends Play
   @inline
   implicit def playerTechnologies: PlayerTechnologies = this
 
-  private val researchedList = new ArrayBuffer[TechnologyDescription]()
-  private val researchedSet = new mutable.HashSet[TechnologyDescription]()
+  private val researchedList = new ArrayBuffer[TechnologyDescriptionView]()
+  private val researchedSet = new mutable.HashSet[TechnologyDescriptionView]()
 
   private var availableList = computeAvailable()
 
   private def computeAvailable() = all.view.filter(_.isAvailable).toBuffer
 
-  def research(newTech: TechnologyDescription): Unit = {
+  def research(newTech: TechnologyDescriptionView): Unit = {
     assert(!newTech.isResearched)
     assert(newTech.requiredTechnologies.forall(isResearched))
     researchedSet += newTech
@@ -46,11 +46,11 @@ private class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends Play
     availableList = computeAvailable()
   }
 
-  override def available: Seq[TechnologyDescription] = availableList
+  override def available: Seq[TechnologyDescriptionView] = availableList
 
-  override def researched: Seq[TechnologyDescription] = researchedList
+  override def researched: Seq[TechnologyDescriptionView] = researchedList
 
-  override def isResearched(tech: TechnologyDescription): Boolean = researchedSet.contains(tech)
+  override def isResearched(tech: TechnologyDescriptionView): Boolean = researchedSet.contains(tech)
 
-  override def all: Seq[TechnologyDescription] = gameRules.technologies.all
+  override def all: Seq[TechnologyDescriptionView] = gameRules.technologies.all
 }

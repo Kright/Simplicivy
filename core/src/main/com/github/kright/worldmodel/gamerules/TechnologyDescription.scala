@@ -28,10 +28,10 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait TechnologyDescription extends HasName {
+trait TechnologyDescriptionView extends HasName {
   def scienceCost: Int
 
-  def requiredTechnologies: Seq[TechnologyDescription]
+  def requiredTechnologies: Seq[TechnologyDescriptionView]
 
 
   @inline
@@ -42,16 +42,16 @@ trait TechnologyDescription extends HasName {
     !isResearched && requiredTechnologies.forall(_.isResearched)
 }
 
-class TechnologyDescriptionImpl(var name: String,
-                                var scienceCost: Int,
-                                var requiredTechnologies: ArrayBuffer[TechnologyDescription] = new ArrayBuffer[TechnologyDescription]()) extends TechnologyDescription
+class TechnologyDescription(var name: String,
+                            var scienceCost: Int,
+                            var requiredTechnologies: ArrayBuffer[TechnologyDescriptionView] = new ArrayBuffer[TechnologyDescriptionView]()) extends TechnologyDescriptionView
 
-object TechnologyDescription extends DilatedConverter[TechnologyDescriptionImpl] {
+object TechnologyDescription extends DilatedConverter[TechnologyDescription] {
 
   import ConfigLoader._
 
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): TechnologyDescriptionImpl =
-    new TechnologyDescriptionImpl(
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): TechnologyDescription =
+    new TechnologyDescription(
       config.getString("name"),
       config.getInt("cost")) {
       this.doLate {

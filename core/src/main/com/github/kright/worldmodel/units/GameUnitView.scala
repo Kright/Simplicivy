@@ -17,24 +17,34 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright.worldmodel.city
+package com.github.kright.worldmodel.units
 
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.CellProduction
+import com.github.kright.worldmodel.gamerules.GameUnitType
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
+  *
   */
-trait City extends MapPosition {
+trait GameUnitView extends MapPosition {
 
+  //may be edited py player
   def name: String
 
-  def citizensCount: Int
+
+  def movementPoints: Int
+
+  def attackPoints: Int // some units may attack twice
+
+
+  def activity: GameUnitActivity
+
+  def hp: Int
+
+  def maxHp: Int
+
+  def unitType: GameUnitType
 
   def owner: CountryLink
-
-  def buildings: Seq[CityBuilding]
-
-  def production: CellProduction
 }

@@ -38,24 +38,24 @@ import scala.collection.mutable
 trait GameRules {
 
   // pure classes, don't hold links to other structures
-  def technologies: GameRulesHolder[TechnologyDescription]
+  def technologies: GameRulesHolder[TechnologyDescriptionView]
 
-  def terrainTypes: GameRulesHolder[TerrainType]
+  def terrainTypes: GameRulesHolder[TerrainTypeView]
 
   // uses techs and terrain types
-  def resources: GameRulesHolder[ResourceType]
+  def resources: GameRulesHolder[ResourceTypeView]
 
   // uses someself, resources and technologies
-  def cityBuildings: GameRulesHolder[CityBuildingType]
+  def cityBuildings: GameRulesHolder[CityBuildingTypeView]
 
   // uses terrain types
-  def langUpgradeTypes: GameRulesHolder[LandUpgradeType]
+  def langUpgradeTypes: GameRulesHolder[LandUpgradeTypeView]
 
   // uses tech, resources, cityBuildingTypes, and itself
   def unitTypes: GameRulesHolder[GameUnitType]
 
   // uses techs, unitTypes, cityBuildings
-  def nations: GameRulesHolder[Nation]
+  def nations: GameRulesHolder[NationView]
 }
 
 class GameRulesHolder[T <: HasName] {
@@ -73,13 +73,13 @@ class GameRulesHolder[T <: HasName] {
 }
 
 class GameRulesImpl() extends GameRules {
-  var technologies: GameRulesHolder[TechnologyDescription] = new GameRulesHolder()
-  var terrainTypes: GameRulesHolder[TerrainType] = new GameRulesHolder()
-  var resources: GameRulesHolder[ResourceType] = new GameRulesHolder()
-  var cityBuildings: GameRulesHolder[CityBuildingType] = new GameRulesHolder()
-  var langUpgradeTypes: GameRulesHolder[LandUpgradeType] = new GameRulesHolder()
+  var technologies: GameRulesHolder[TechnologyDescriptionView] = new GameRulesHolder()
+  var terrainTypes: GameRulesHolder[TerrainTypeView] = new GameRulesHolder()
+  var resources: GameRulesHolder[ResourceTypeView] = new GameRulesHolder()
+  var cityBuildings: GameRulesHolder[CityBuildingTypeView] = new GameRulesHolder()
+  var langUpgradeTypes: GameRulesHolder[LandUpgradeTypeView] = new GameRulesHolder()
   var unitTypes: GameRulesHolder[GameUnitType] = new GameRulesHolder()
-  var nations: GameRulesHolder[Nation] = new GameRulesHolder()
+  var nations: GameRulesHolder[NationView] = new GameRulesHolder()
 }
 
 
@@ -93,13 +93,13 @@ object GameRules extends ConfigConverter[GameRulesImpl] {
     implicit val gameRules: GameRulesImpl = new GameRulesImpl()
     implicit val linking: DilatedExecutor = new DilatedExecutor()
 
-    gameRules.technologies ++= config.getNamedEntries("technologies").map(_.asLinked[TechnologyDescriptionImpl])
-    gameRules.terrainTypes ++= config.getNamedEntries("terrainTypes").map(_.as[TerrainTypeImpl])
-    gameRules.resources ++= config.getNamedEntries("resources").map(_.asLinked[ResourceTypeImpl])
-    gameRules.cityBuildings ++= config.getNamedEntries("cityBuildings").map(_.asLinked[CityBuildingTypeImpl])
-    gameRules.langUpgradeTypes ++= config.getNamedEntries("landUpgrades").map(_.asLinked[LandUpgradeTypeImpl])
+    gameRules.technologies ++= config.getNamedEntries("technologies").map(_.asLinked[TechnologyDescription])
+    gameRules.terrainTypes ++= config.getNamedEntries("terrainTypes").map(_.as[TerrainType])
+    gameRules.resources ++= config.getNamedEntries("resources").map(_.asLinked[ResourceType])
+    gameRules.cityBuildings ++= config.getNamedEntries("cityBuildings").map(_.asLinked[CityBuildingType])
+    gameRules.langUpgradeTypes ++= config.getNamedEntries("landUpgrades").map(_.asLinked[LandUpgradeType])
     gameRules.unitTypes ++= config.getNamedEntries("units").map(_.asLinked[GameUnitTypeImpl])
-    gameRules.nations ++= config.getNamedEntries("nations").map(_.asLinked[NationImpl])
+    gameRules.nations ++= config.getNamedEntries("nations").map(_.asLinked[Nation])
 
     linking.execute()
 

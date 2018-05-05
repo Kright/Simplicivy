@@ -37,11 +37,11 @@ case object BuildCity extends GameUnitActionType
 
 case object Destroy extends GameUnitActionType
 
-case class Terraforming(var to: TerrainType,
+case class Terraforming(var to: TerrainTypeView,
                         moves: Int,
                         requirement: CellActionRequirement) extends WorkerAction
 
-case class BuildingLandUpgrade(var upgrade: LandUpgradeType,
+case class BuildingLandUpgrade(var upgrade: LandUpgradeTypeView,
                                moves: Int,
                                requirement: CellActionRequirement) extends GameUnitActionType with WorkerAction
 
@@ -49,8 +49,8 @@ case class BuildRoad(moves: Int,
                      requirement: CellActionRequirement) extends WorkerAction
 
 
-class CellActionRequirement(var terrain: mutable.Set[TerrainType] = new mutable.HashSet[TerrainType](),
-                            var technology: ArrayBuffer[TechnologyDescription] = new ArrayBuffer[TechnologyDescription]())
+class CellActionRequirement(var terrain: mutable.Set[TerrainTypeView] = new mutable.HashSet[TerrainTypeView](),
+                            var technology: ArrayBuffer[TechnologyDescriptionView] = new ArrayBuffer[TechnologyDescriptionView]())
 
 object GameUnitActionType extends DilatedConverter[Seq[GameUnitActionType]] {
 

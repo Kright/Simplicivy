@@ -19,8 +19,8 @@
 
 package com.github.kright.worldmodel
 
-import com.github.kright.worldmodel.units.GameUnit
-import com.github.kright.worldmodel.city.City
+import com.github.kright.worldmodel.units.GameUnitView
+import com.github.kright.worldmodel.city.CityView
 import com.github.kright.worldmodel.country.CountryLink
 import com.github.kright.worldmodel.gamerules._
 
@@ -32,13 +32,13 @@ import scala.collection.mutable.ArrayBuffer
 class MutableMapCell(val x: Int, val y: Int) extends MapCell {
   override def visibility: CellVisibility = Visible
 
-  var terrain: TerrainType = _
+  var terrain: TerrainTypeView = _
 
-  var city: Option[City] = None
+  var city: Option[CityView] = None
 
-  var resource: Option[ResourceType] = None
+  var resource: Option[ResourceTypeView] = None
 
-  val units: ArrayBuffer[GameUnit] = new ArrayBuffer[GameUnit]()
+  val units: ArrayBuffer[GameUnitView] = new ArrayBuffer[GameUnitView]()
 
   var owner: Option[CountryLink] = None
 
@@ -49,19 +49,19 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   var road: RoadType = NoRoad
 
-  var landUpgrade: Option[LandUpgradeType] = None
+  var landUpgrade: Option[LandUpgradeTypeView] = None
 
   var hasPollution: Boolean = false
 }
 
 
 class ShadowedMapCell private(val x: Int, val y: Int,
-                              val terrain: TerrainType,
-                              val city: Option[City],
-                              val resource: Option[ResourceType],
+                              val terrain: TerrainTypeView,
+                              val city: Option[CityView],
+                              val resource: Option[ResourceTypeView],
                               val owner: Option[CountryLink],
                               val road: RoadType,
-                              val landUpgrade: Option[LandUpgradeType],
+                              val landUpgrade: Option[LandUpgradeTypeView],
                               val hasPollution: Boolean) extends MapCell {
 
   def this(c: MapCell) = this(c.x, c.y, c.terrain, c.city, c.resource, c.owner, c.road,
@@ -69,7 +69,7 @@ class ShadowedMapCell private(val x: Int, val y: Int,
 
   override def visibility: CellVisibility = Shadowed
 
-  override def units: Seq[GameUnit] = List.empty
+  override def units: Seq[GameUnitView] = List.empty
 
   /**
     * @return if shadowed return self else make shadowed copy
@@ -85,13 +85,13 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
   private def throwException = throw new RuntimeException("this is Unknown cell!")
 
 
-  override def terrain: TerrainType = throwException
+  override def terrain: TerrainTypeView = throwException
 
-  override def city: Option[City] = throwException
+  override def city: Option[CityView] = throwException
 
-  override def resource: Option[ResourceType] = throwException
+  override def resource: Option[ResourceTypeView] = throwException
 
-  override def units: Seq[GameUnit] = throwException
+  override def units: Seq[GameUnitView] = throwException
 
   override def owner: Option[CountryLink] = throwException
 
@@ -102,7 +102,7 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def road: RoadType = throwException
 
-  override def landUpgrade: Option[LandUpgradeType] = throwException
+  override def landUpgrade: Option[LandUpgradeTypeView] = throwException
 
   override def hasPollution: Boolean = throwException
 }

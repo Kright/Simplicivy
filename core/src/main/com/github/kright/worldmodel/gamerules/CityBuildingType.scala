@@ -25,22 +25,22 @@ import com.typesafe.config.Config
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait CityBuildingType extends HasName {
+trait CityBuildingTypeView extends HasName {
 
   def requires: RequirementForCityProduction
 
   def cost: Int = requires.cost
 
 
-  def buildingEffect: BuildingEffect
+  def buildingEffect: BuildingEffectView
 }
 
-class CityBuildingTypeImpl(var name: String,
-                           var requires: RequirementForCityProduction,
-                           var buildingEffect: BuildingEffect) extends CityBuildingType
+class CityBuildingType(val name: String,
+                       var requires: RequirementForCityProduction,
+                       var buildingEffect: BuildingEffectView) extends CityBuildingTypeView
 
 
-trait BuildingEffect {
+trait BuildingEffectView {
 
   def maintenance: Int
 
@@ -63,34 +63,34 @@ trait BuildingEffect {
   def pollution: Int
 }
 
-class BuildingEffectImpl(var maintenance: Int,
-                         var happiness: Int,
-                         var culture: Int,
-                         var taxBonus: Int,
-                         var researchBonus: Int,
-                         var productionBonus: Int,
-                         var defenceBonus: Int,
-                         var corruptionDecrease: Int,
-                         var pollution: Int) extends BuildingEffect
+class BuildingEffect(var maintenance: Int,
+                     var happiness: Int,
+                     var culture: Int,
+                     var taxBonus: Int,
+                     var researchBonus: Int,
+                     var productionBonus: Int,
+                     var defenceBonus: Int,
+                     var corruptionDecrease: Int,
+                     var pollution: Int) extends BuildingEffectView
 
 
-object CityBuildingType extends DilatedConverter[CityBuildingTypeImpl] {
+object CityBuildingType extends DilatedConverter[CityBuildingType] {
 
   import ConfigLoader._
 
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): CityBuildingTypeImpl = {
-    new CityBuildingTypeImpl(config.getString("name"),
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): CityBuildingType = {
+    new CityBuildingType(config.getString("name"),
       config.asLinked[RequirementForCityProduction]("requires"),
-      config.getAs[BuildingEffectImpl]("effects"))
+      config.getAs[BuildingEffect]("effects"))
   }
 }
 
 
-object BuildingEffect extends ConfigConverter[BuildingEffectImpl] {
-  override def convert(config: Config): BuildingEffectImpl = {
+object BuildingEffect extends ConfigConverter[BuildingEffect] {
+  override def convert(config: Config): BuildingEffect = {
     implicit def parseOr0(s: String): Int = if (config.hasPath(s)) config.getInt(s) else 0
 
-    new BuildingEffectImpl(
+    new BuildingEffect(
       "maintenance",
       "happiness",
       "culture",

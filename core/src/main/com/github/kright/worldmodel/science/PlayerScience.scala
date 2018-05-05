@@ -19,7 +19,7 @@
 
 package com.github.kright.worldmodel.science
 
-import com.github.kright.worldmodel.gamerules.TechnologyDescription
+import com.github.kright.worldmodel.gamerules.TechnologyDescriptionView
 
 /**
   * Created by Igor Slobodskov on 27 April 2018
@@ -36,10 +36,10 @@ trait PlayerScience extends PlayerTechnologies {
     * @param tech goal technology to research. Must be available
     * @return true if require to start new technology research
     */
-  def setResearchedTechnology(tech: TechnologyDescription): Boolean
+  def setResearchedTechnology(tech: TechnologyDescriptionView): Boolean
 
 
-  def currentResearch: Option[TechnologyDescription]
+  def currentResearch: Option[TechnologyDescriptionView]
 
   def currentProgress: Iterable[ResearchProgress]
 }
@@ -47,18 +47,18 @@ trait PlayerScience extends PlayerTechnologies {
 
 trait PlayerTechnologies {
 
-  def all: Seq[TechnologyDescription]
+  def all: Seq[TechnologyDescriptionView]
 
-  def available: Seq[TechnologyDescription]
+  def available: Seq[TechnologyDescriptionView]
 
-  def researched: Seq[TechnologyDescription]
+  def researched: Seq[TechnologyDescriptionView]
 
-  def isResearched(tech: TechnologyDescription): Boolean
+  def isResearched(tech: TechnologyDescriptionView): Boolean
 }
 
 
 trait ResearchProgress {
-  def tech: TechnologyDescription
+  def tech: TechnologyDescriptionView
 
   def progress: Int
 }

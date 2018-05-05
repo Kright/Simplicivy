@@ -27,14 +27,14 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * Created by Igor Slobodskov on 29 April 2018
   */
-trait Nation extends HasName {
+trait NationView extends HasName {
 
   def name: String
 
-  def features: NationFeatures
+  def features: NationFeaturesView
 
 
-  def startingTechs: Seq[TechnologyDescription]
+  def startingTechs: Seq[TechnologyDescriptionView]
 
   //  def extraGameUnits: Modification[GameUnitType]
   //
@@ -43,7 +43,7 @@ trait Nation extends HasName {
 }
 
 
-trait NationFeatures {
+trait NationFeaturesView {
   def moreFood: Boolean
 
   def moreCommerce: Boolean
@@ -63,26 +63,26 @@ trait NationFeatures {
   def cultural: Boolean
 }
 
-class NationFeaturesImpl(var moreFood: Boolean,
-                         var moreCommerce: Boolean,
-                         var moreProduction: Boolean,
-                         var landExpansion: Boolean,
-                         var seaExpansion: Boolean,
-                         var military: Boolean,
-                         var scientific: Boolean,
-                         var cultural: Boolean) extends NationFeatures
+class NationFeatures(var moreFood: Boolean,
+                     var moreCommerce: Boolean,
+                     var moreProduction: Boolean,
+                     var landExpansion: Boolean,
+                     var seaExpansion: Boolean,
+                     var military: Boolean,
+                     var scientific: Boolean,
+                     var cultural: Boolean) extends NationFeaturesView
 
 
-class NationImpl(val name: String,
-                 var features: NationFeaturesImpl,
-                 val startingTechs: ArrayBuffer[TechnologyDescription] = new ArrayBuffer[TechnologyDescription]()) extends Nation
+class Nation(val name: String,
+             var features: NationFeatures,
+             val startingTechs: ArrayBuffer[TechnologyDescriptionView] = new ArrayBuffer[TechnologyDescriptionView]()) extends NationView
 
-object Nation extends DilatedConverter[NationImpl] {
+object Nation extends DilatedConverter[Nation] {
 
   import ConfigLoader._
 
-  override def convert(implicit cfg: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): NationImpl = {
-    new NationImpl(
+  override def convert(implicit cfg: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): Nation = {
+    new Nation(
       name = cfg.getString("name"),
       features = nationFeatures(cfg)) {
       this.doLate {
@@ -94,7 +94,7 @@ object Nation extends DilatedConverter[NationImpl] {
   private def nationFeatures(c: Config) = {
     implicit def strToBoolean(s: String): Boolean = c.getOption[Boolean](s).getOrElse(false)
 
-    new NationFeaturesImpl(
+    new NationFeatures(
       moreFood = "moreFood",
       moreCommerce = "moreCommerce",
       moreProduction = "moreProduction",

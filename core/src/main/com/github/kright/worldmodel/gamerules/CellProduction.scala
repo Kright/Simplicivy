@@ -24,7 +24,7 @@ import com.typesafe.config.Config
 /**
   * Created by Igor Slobodskov on 28 April 2018
   */
-trait CellProduction {
+trait CellProductionView {
 
   def food: Int
 
@@ -33,16 +33,16 @@ trait CellProduction {
   def commerce: Int
 }
 
-class MutableCellProduction(var food: Int,
-                            var production: Int,
-                            var commerce: Int) extends CellProduction
+class CellProduction(var food: Int,
+                     var production: Int,
+                     var commerce: Int) extends CellProductionView
 
-object CellProduction extends ConfigConverter[MutableCellProduction] {
-  override def convert(config: Config): MutableCellProduction = {
+object CellProduction extends ConfigConverter[CellProduction] {
+  override def convert(config: Config): CellProduction = {
     import ConfigLoader._
     implicit def str2int(s: String) = config.getOption[Int](s).getOrElse(0)
 
-    new MutableCellProduction(
+    new CellProduction(
       food = "food",
       production = "production",
       commerce = "commerce")

@@ -19,7 +19,7 @@
 
 package com.github.kright.worldmodel.science
 
-import com.github.kright.worldmodel.gamerules.{GameRules, TechnologyDescription}
+import com.github.kright.worldmodel.gamerules.{GameRules, TechnologyDescriptionView}
 
 import scala.collection.mutable
 
@@ -29,7 +29,7 @@ import scala.collection.mutable
 class PlayerScienceImpl(implicit gameRules: GameRules) extends PlayerScience {
 
   private val tech = new PlayerTechnologiesImpl()
-  private val savedProgress = new mutable.HashMap[TechnologyDescription, Progress]()
+  private val savedProgress = new mutable.HashMap[TechnologyDescriptionView, Progress]()
 
   private var researchNow: Progress = null
   private var freeSciencePoints: Int = 0
@@ -61,25 +61,25 @@ class PlayerScienceImpl(implicit gameRules: GameRules) extends PlayerScience {
     }
   }
 
-  override def setResearchedTechnology(tech: TechnologyDescription): Boolean = {
+  override def setResearchedTechnology(tech: TechnologyDescriptionView): Boolean = {
     researchNow = savedProgress.getOrElseUpdate(tech, new Progress(tech))
     doResearch()
   }
 
 
-  override def currentResearch: Option[TechnologyDescription] = Option(researchNow).map(_.tech)
+  override def currentResearch: Option[TechnologyDescriptionView] = Option(researchNow).map(_.tech)
 
   override def currentProgress: Iterable[ResearchProgress] = savedProgress.values
 
-  override def all: Seq[TechnologyDescription] = tech.all
+  override def all: Seq[TechnologyDescriptionView] = tech.all
 
-  override def available: Seq[TechnologyDescription] = tech.available
+  override def available: Seq[TechnologyDescriptionView] = tech.available
 
-  override def researched: Seq[TechnologyDescription] = tech.researched
+  override def researched: Seq[TechnologyDescriptionView] = tech.researched
 
-  override def isResearched(t: TechnologyDescription): Boolean = t.isResearched(tech)
+  override def isResearched(t: TechnologyDescriptionView): Boolean = t.isResearched(tech)
 }
 
-private class Progress(val tech: TechnologyDescription) extends ResearchProgress {
+private class Progress(val tech: TechnologyDescriptionView) extends ResearchProgress {
   var progress: Int = 0
 }

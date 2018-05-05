@@ -30,9 +30,9 @@ import scala.collection.mutable.ArrayBuffer
 
 class RequirementForCityProduction(var cost: Int,
                                    var citizensConsumption: Int,
-                                   var technology: ArrayBuffer[TechnologyDescription],
-                                   var resources: ArrayBuffer[ResourceType],
-                                   var cityBuildings: ArrayBuffer[CityBuildingType],
+                                   var technology: ArrayBuffer[TechnologyDescriptionView],
+                                   var resources: ArrayBuffer[ResourceTypeView],
+                                   var cityBuildings: ArrayBuffer[CityBuildingTypeView],
                                    var requireRiver: Boolean = false,
                                    var requireSea: Boolean = false)
 
@@ -45,9 +45,9 @@ object RequirementForCityProduction extends DilatedConverter[RequirementForCityP
     new RequirementForCityProduction(
       cost = config.getInt("cost"),
       citizensConsumption = config.getOption[Int]("citizens").getOrElse(0),
-      technology = new ArrayBuffer[TechnologyDescription](),
-      resources = new ArrayBuffer[ResourceType](),
-      cityBuildings = new ArrayBuffer[CityBuildingType](),
+      technology = new ArrayBuffer[TechnologyDescriptionView](),
+      resources = new ArrayBuffer[ResourceTypeView](),
+      cityBuildings = new ArrayBuffer[CityBuildingTypeView](),
       requireRiver = config.getOption[Boolean]("requireRiver").getOrElse(false),
       requireSea = config.getOption[Boolean]("requireSea").getOrElse(false)
     ) {

@@ -27,15 +27,15 @@ import scala.collection.mutable
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait ResourceType extends HasName {
+trait ResourceTypeView extends HasName {
 
   def resourceKind: ResourceKind
 
-  def requiredTerrain: mutable.Set[TerrainType]
+  def requiredTerrain: mutable.Set[TerrainTypeView]
 
-  def requiredTechnology: Option[TechnologyDescription]
+  def requiredTechnology: Option[TechnologyDescriptionView]
 
-  def cellBonus: CellProduction
+  def cellBonus: CellProductionView
 }
 
 sealed trait ResourceKind
@@ -46,26 +46,26 @@ case object StrategicResource extends ResourceKind
 
 case object LuxuryResource extends ResourceKind
 
-class ResourceTypeImpl(val name: String,
-                       var resourceKind: ResourceKind,
-                       var requiredTerrain: mutable.Set[TerrainType],
-                       var requiredTechnology: Option[TechnologyDescription],
-                       var cellBonus: MutableCellProduction) extends ResourceType
+class ResourceType(val name: String,
+                   var resourceKind: ResourceKind,
+                   var requiredTerrain: mutable.Set[TerrainTypeView],
+                   var requiredTechnology: Option[TechnologyDescriptionView],
+                   var cellBonus: CellProduction) extends ResourceTypeView
 
-object ResourceType extends DilatedConverter[ResourceTypeImpl] {
+object ResourceType extends DilatedConverter[ResourceType] {
 
   import ConfigLoader._
 
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): ResourceTypeImpl = {
-    new ResourceTypeImpl(name = config.getString("name"),
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): ResourceType = {
+    new ResourceType(name = config.getString("name"),
       resourceKind = config.getString("kind") match {
         case "bonus" => BonusResource
         case "strategic" => StrategicResource
         case "luxury" => LuxuryResource
       },
-      requiredTerrain = new mutable.HashSet[TerrainType](),
+      requiredTerrain = new mutable.HashSet[TerrainTypeView](),
       requiredTechnology = None,
-      cellBonus = config.getConfig("bonus").as[MutableCellProduction]
+      cellBonus = config.getConfig("bonus").as[CellProduction]
     ) {
       this.doLate {
         requiredTerrain ++= config.getStrings("terrain").map(gameRules.terrainTypes(_))

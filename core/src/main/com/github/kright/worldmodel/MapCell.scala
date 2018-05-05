@@ -19,11 +19,11 @@
 
 package com.github.kright.worldmodel
 
-import com.github.kright.worldmodel.units.GameUnit
+import com.github.kright.worldmodel.units.GameUnitView
 import com.github.kright.worldmodel.worldmap.MapPosition
-import com.github.kright.worldmodel.city.City
+import com.github.kright.worldmodel.city.CityView
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.{LandUpgradeType, ResourceType, RoadType, TerrainType}
+import com.github.kright.worldmodel.gamerules.{LandUpgradeTypeView, ResourceTypeView, RoadType, TerrainTypeView}
 
 
 /**
@@ -33,7 +33,7 @@ trait MapCell extends MapPosition with LandModifiers {
 
   def visibility: CellVisibility
 
-  def units: Seq[GameUnit]
+  def units: Seq[GameUnitView]
 
   def owner: Option[CountryLink]
 
@@ -45,15 +45,15 @@ trait MapCell extends MapPosition with LandModifiers {
 
 
 trait LandModifiers {
-  def terrain: TerrainType
+  def terrain: TerrainTypeView
 
-  def resource: Option[ResourceType]
+  def resource: Option[ResourceTypeView]
 
   def road: RoadType
 
-  def landUpgrade: Option[LandUpgradeType]
+  def landUpgrade: Option[LandUpgradeTypeView]
 
   def hasPollution: Boolean
 
-  def city: Option[City]
+  def city: Option[CityView]
 }

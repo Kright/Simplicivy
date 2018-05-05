@@ -95,7 +95,7 @@ class WaterMoving(val moves: Int,
   * some units (like tanks or catapults) can't move in mountains without roads
   */
 class LandMoving(val moves: Int,
-                 val onlyOnRoads: mutable.Set[TerrainType])
+                 val onlyOnRoads: mutable.Set[TerrainTypeView])
 
 
 /**
@@ -192,7 +192,7 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
     def landMoves(implicit gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandMoving = {
       new LandMoving(
         moves = c.getInt("moves"),
-        onlyOnRoads = new mutable.HashSet[TerrainType]()
+        onlyOnRoads = new mutable.HashSet[TerrainTypeView]()
       ) {
         this.doLate {
           onlyOnRoads ++= c.getStrings("onlyOnRoads").map(gameRules.terrainTypes(_))

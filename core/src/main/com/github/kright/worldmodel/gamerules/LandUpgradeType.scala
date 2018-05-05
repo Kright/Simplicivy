@@ -27,9 +27,9 @@ import scala.collection.mutable
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait LandUpgradeType extends HasName {
+trait LandUpgradeTypeView extends HasName {
 
-  def possibleTerrain: mutable.Set[TerrainType]
+  def possibleTerrain: mutable.Set[TerrainTypeView]
 
   def resources: ResourcesRequirement
 }
@@ -38,18 +38,18 @@ sealed trait ResourcesRequirement
 
 case object AllowAll extends ResourcesRequirement
 
-case class ResourcesInList(permittedResources: Set[ResourceType]) extends ResourcesRequirement
+case class ResourcesInList(permittedResources: Set[ResourceTypeView]) extends ResourcesRequirement
 
-class LandUpgradeTypeImpl(var name: String,
-                          var resources: ResourcesRequirement,
-                          val possibleTerrain: mutable.Set[TerrainType]) extends LandUpgradeType
+class LandUpgradeType(val name: String,
+                      var resources: ResourcesRequirement,
+                      val possibleTerrain: mutable.Set[TerrainTypeView]) extends LandUpgradeTypeView
 
-object LandUpgradeType extends DilatedConverter[LandUpgradeTypeImpl] {
+object LandUpgradeType extends DilatedConverter[LandUpgradeType] {
 
   import ConfigLoader._
 
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandUpgradeTypeImpl = {
-    new LandUpgradeTypeImpl(config.getString("name"), null, new mutable.HashSet[TerrainType]) {
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandUpgradeType = {
+    new LandUpgradeType(config.getString("name"), null, new mutable.HashSet[TerrainTypeView]) {
       this.doLate {
         resources = if (config.hasPath("resources")) {
           ResourcesInList(config.getStrings("resources").map(gameRules.resources(_)).toSet)

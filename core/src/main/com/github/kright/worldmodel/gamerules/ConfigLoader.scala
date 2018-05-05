@@ -96,17 +96,17 @@ object ConfigLoader {
     }
   }
 
-  implicit val converterCellProduction: ConfigConverter[MutableCellProduction] = CellProduction
-  implicit val converterBuildingEffectImpl: ConfigConverter[BuildingEffectImpl] = BuildingEffect
-  implicit val converterTerrainTypeImpl: ConfigConverter[TerrainTypeImpl] = TerrainType
+  implicit val converterCellProduction: ConfigConverter[CellProduction] = CellProduction
+  implicit val converterBuildingEffectImpl: ConfigConverter[BuildingEffect] = BuildingEffect
+  implicit val converterTerrainTypeImpl: ConfigConverter[TerrainType] = TerrainType
 
-  implicit val converterResourceType: DilatedConverter[ResourceTypeImpl] = ResourceType
-  implicit val converterTechnologyDescriptionImpl: DilatedConverter[TechnologyDescriptionImpl] = TechnologyDescription
+  implicit val converterResourceType: DilatedConverter[ResourceType] = ResourceType
+  implicit val converterTechnologyDescriptionImpl: DilatedConverter[TechnologyDescription] = TechnologyDescription
   implicit val converterRequirementForCityProduction: DilatedConverter[RequirementForCityProduction] = RequirementForCityProduction
-  implicit val converterCityBuildingType: DilatedConverter[CityBuildingTypeImpl] = CityBuildingType
-  implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeTypeImpl] = LandUpgradeType
+  implicit val converterCityBuildingType: DilatedConverter[CityBuildingType] = CityBuildingType
+  implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeType] = LandUpgradeType
   implicit val converterGameUnitType: DilatedConverter[GameUnitTypeImpl] = GameUnitType
-  implicit val convertNationImpl: DilatedConverter[NationImpl] = Nation
+  implicit val convertNationImpl: DilatedConverter[Nation] = Nation
   implicit val convertGameUnitActionType: DilatedConverter[Seq[GameUnitActionType]] = GameUnitActionType
 
 

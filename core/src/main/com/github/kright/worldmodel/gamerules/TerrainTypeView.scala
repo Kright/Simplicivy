@@ -24,7 +24,7 @@ import com.typesafe.config.Config
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait TerrainType extends HasName {
+trait TerrainTypeView extends HasName {
 
   def isLand: Boolean
 
@@ -43,32 +43,32 @@ trait TerrainType extends HasName {
 
   def defenceBonus: Int
 
-  def produces: CellProduction
+  def produces: CellProductionView
 }
 
-class TerrainTypeImpl(var name: String,
-                      var isLand: Boolean,
-                      var height: Int,
-                      var movementCost: Int,
-                      var defenceBonus: Int,
-                      var produces: MutableCellProduction) extends TerrainType {
+class TerrainType(var name: String,
+                  var isLand: Boolean,
+                  var height: Int,
+                  var movementCost: Int,
+                  var defenceBonus: Int,
+                  var produces: CellProduction) extends TerrainTypeView {
   def this() {
     this(null, true, 0, 0, 0, null)
   }
 }
 
-object TerrainType extends ConfigConverter[TerrainTypeImpl] {
+object TerrainType extends ConfigConverter[TerrainType] {
 
   import ConfigLoader._
 
-  override def convert(config: Config): TerrainTypeImpl = {
+  override def convert(config: Config): TerrainType = {
 
-    new TerrainTypeImpl(config.getString("name"),
+    new TerrainType(config.getString("name"),
       config.getBoolean("isLand"),
       config.getInt("height"),
       config.getOption[Int]("movementCost").getOrElse(1),
       config.getOption[Int]("defenceBonus").getOrElse(0),
-      config.getConfig("produces").as[MutableCellProduction]
+      config.getConfig("produces").as[CellProduction]
     )
   }
 }
