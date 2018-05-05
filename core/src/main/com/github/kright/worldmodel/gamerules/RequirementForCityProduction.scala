@@ -29,6 +29,7 @@ import scala.collection.mutable.ArrayBuffer
   */
 
 class RequirementForCityProduction(var cost: Int,
+                                   var citizensConsumption: Int,
                                    var technology: ArrayBuffer[TechnologyDescription],
                                    var resources: ArrayBuffer[ResourceType],
                                    var cityBuildings: ArrayBuffer[CityBuildingType],
@@ -41,12 +42,14 @@ object RequirementForCityProduction extends DilatedConverter[RequirementForCityP
   import ConfigLoader._
 
   override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): RequirementForCityProduction = {
-    new RequirementForCityProduction(config.getInt("cost"),
-      new ArrayBuffer[TechnologyDescription](),
-      new ArrayBuffer[ResourceType](),
-      new ArrayBuffer[CityBuildingType](),
-      config.getOption[Boolean]("requireRiver").getOrElse(false),
-      config.getOption[Boolean]("requireSea").getOrElse(false)
+    new RequirementForCityProduction(
+      cost = config.getInt("cost"),
+      citizensConsumption = config.getOption[Int]("citizens").getOrElse(0),
+      technology = new ArrayBuffer[TechnologyDescription](),
+      resources = new ArrayBuffer[ResourceType](),
+      cityBuildings = new ArrayBuffer[CityBuildingType](),
+      requireRiver = config.getOption[Boolean]("requireRiver").getOrElse(false),
+      requireSea = config.getOption[Boolean]("requireSea").getOrElse(false)
     ) {
       this.doLate {
         technology ++= config.getStrings("technology").map(gameRules.technologies(_))
