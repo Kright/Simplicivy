@@ -27,19 +27,25 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Align
 import com.github.kright.utils.FPSMeasure
 
+import com.github.kright.utils.LibgdxExt.VectorExt
+
 /**
   * Created by Igor Slobodskov on 05 May 2018
   */
 class FPSLabel(fps: FPSMeasure, screenSize: Vector2) extends Label("fps", FPSLabel.skin) {
   setAlignment(Align.left)
   private val font = FPSLabel.labelStyle.font
+  private val oldScreenSize = new Vector2()
 
   var padding = 8
 
-  override def draw(batch: Batch, parentAlpha: Float): Unit = {
+  override def act(delta: Float): Unit = {
     setText(s"fps: ${fps.fps}, max dt:${fps.maxDeltaNs / 1000}")
-    setPosition(padding, screenSize.y - getHeight - padding)
-    super.draw(batch, parentAlpha)
+    if (oldScreenSize != screenSize) {
+      oldScreenSize := screenSize
+      setPosition(padding, screenSize.y - getHeight - padding)
+    }
+    super.act(delta)
   }
 }
 

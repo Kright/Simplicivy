@@ -56,5 +56,12 @@ object LibgdxExt {
 
     @inline
     def /(div: Float): Unit = a.cpy().scl(1f / div)
+
+    @inline
+    def ==(v: Vec): Boolean = a.epsilonEquals(v, 0.000001f)
+
+    @inline
+    def !=(v: Vec): Boolean = a != v
   }
+
 }
