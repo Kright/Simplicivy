@@ -17,18 +17,22 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright.worldmodel.country
+package com.github.kright
 
-import com.github.kright.worldmodel.worldmap.SimpleMap
+import com.badlogic.gdx._
+import com.badlogic.gdx.math.Vector2
+import com.github.kright.gui.mobile.LoadingScreen
 
-/**
-  * Created by Igor Slobodskov on 02 May 2018
-  */
-trait GameWorld {
 
-  def baseMap: SimpleMap
+object MainGame extends Game {
+  val screenSize = new Vector2()
 
-  def countries: Seq[Country]
+  override def create(): Unit = {
+    setScreen(new LoadingScreen)
+  }
+
+  override def resize(width: Int, height: Int): Unit = {
+    super.resize(width, height)
+    screenSize.set(width, height)
+  }
 }
-
-trait Player

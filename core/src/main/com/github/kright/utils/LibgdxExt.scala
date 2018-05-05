@@ -57,5 +57,4 @@ object LibgdxExt {
     @inline
     def /(div: Float): Unit = a.cpy().scl(1f / div)
   }
-
 }

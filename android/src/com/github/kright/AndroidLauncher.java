@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.github.kright.MainGame$;
 
 public class AndroidLauncher extends AndroidApplication {
     @Override
@@ -18,6 +19,6 @@ public class AndroidLauncher extends AndroidApplication {
         config.useImmersiveMode = true;
         config.hideStatusBar = true;
 
-        initialize(new Main(), config);
+        initialize(MainGame$.MODULE$, config);
     }
 }
