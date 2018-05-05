@@ -52,7 +52,7 @@ trait GameRules {
   def langUpgradeTypes: GameRulesHolder[LandUpgradeTypeView]
 
   // uses tech, resources, cityBuildingTypes, and itself
-  def unitTypes: GameRulesHolder[GameUnitType]
+  def unitTypes: GameRulesHolder[GameUnitTypeView]
 
   // uses techs, unitTypes, cityBuildings
   def nations: GameRulesHolder[NationView]
@@ -78,7 +78,7 @@ class GameRulesImpl() extends GameRules {
   var resources: GameRulesHolder[ResourceTypeView] = new GameRulesHolder()
   var cityBuildings: GameRulesHolder[CityBuildingTypeView] = new GameRulesHolder()
   var langUpgradeTypes: GameRulesHolder[LandUpgradeTypeView] = new GameRulesHolder()
-  var unitTypes: GameRulesHolder[GameUnitType] = new GameRulesHolder()
+  var unitTypes: GameRulesHolder[GameUnitTypeView] = new GameRulesHolder()
   var nations: GameRulesHolder[NationView] = new GameRulesHolder()
 }
 
@@ -98,7 +98,7 @@ object GameRules extends ConfigConverter[GameRulesImpl] {
     gameRules.resources ++= config.getNamedEntries("resources").map(_.asLinked[ResourceType])
     gameRules.cityBuildings ++= config.getNamedEntries("cityBuildings").map(_.asLinked[CityBuildingType])
     gameRules.langUpgradeTypes ++= config.getNamedEntries("landUpgrades").map(_.asLinked[LandUpgradeType])
-    gameRules.unitTypes ++= config.getNamedEntries("units").map(_.asLinked[GameUnitTypeImpl])
+    gameRules.unitTypes ++= config.getNamedEntries("units").map(_.asLinked[GameUnitType])
     gameRules.nations ++= config.getNamedEntries("nations").map(_.asLinked[Nation])
 
     linking.execute()

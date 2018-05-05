@@ -105,7 +105,7 @@ object ConfigLoader {
   implicit val converterRequirementForCityProduction: DilatedConverter[RequirementForCityProduction] = RequirementForCityProduction
   implicit val converterCityBuildingType: DilatedConverter[CityBuildingType] = CityBuildingType
   implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeType] = LandUpgradeType
-  implicit val converterGameUnitType: DilatedConverter[GameUnitTypeImpl] = GameUnitType
+  implicit val converterGameUnitType: DilatedConverter[GameUnitType] = GameUnitType
   implicit val convertNationImpl: DilatedConverter[Nation] = Nation
   implicit val convertGameUnitActionType: DilatedConverter[Seq[GameUnitActionType]] = GameUnitActionType
 

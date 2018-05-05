@@ -28,7 +28,7 @@ import scala.collection.mutable
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait GameUnitType extends HasName {
+trait GameUnitTypeView extends HasName {
 
   // simple fields
 
@@ -66,7 +66,7 @@ trait GameUnitType extends HasName {
 
   def requirements: RequirementForCityProduction
 
-  def upgradesTo: Seq[GameUnitType]
+  def upgradesTo: Seq[GameUnitTypeView]
 }
 
 
@@ -125,30 +125,30 @@ case object Water extends MovingEnvironment
 
 case object Air extends MovingEnvironment
 
-class GameUnitTypeImpl(var name: String,
-                       var movingOn: MovingEnvironment,
-                       var isMilitary: Boolean,
-                       var levels: Seq[GameUnitLevel],
-                       var landMoves: Option[LandMoving],
-                       var seaMoves: Option[WaterMoving],
-                       var meleeCombat: Option[MeleeCombat],
-                       var rangeAttack: Option[RangeAttack],
-                       var airBombardment: Option[AirBombardment],
-                       var antiAirDefence: Option[AntiAirDefence],
-                       var visibilityModel: VisibilityModel,
-                       var maxCarriedUnits: Int,
-                       var maintenanceCost: Int,
-                       var possibleActions: ArrayBuffer[GameUnitActionType],
-                       var requirements: RequirementForCityProduction,
-                       var upgradesTo: ArrayBuffer[GameUnitType]) extends GameUnitType {}
+class GameUnitType(val name: String,
+                   var movingOn: MovingEnvironment,
+                   var isMilitary: Boolean,
+                   var levels: Seq[GameUnitLevel],
+                   var landMoves: Option[LandMoving],
+                   var seaMoves: Option[WaterMoving],
+                   var meleeCombat: Option[MeleeCombat],
+                   var rangeAttack: Option[RangeAttack],
+                   var airBombardment: Option[AirBombardment],
+                   var antiAirDefence: Option[AntiAirDefence],
+                   var visibilityModel: VisibilityModel,
+                   var maxCarriedUnits: Int,
+                   var maintenanceCost: Int,
+                   var possibleActions: ArrayBuffer[GameUnitActionType],
+                   var requirements: RequirementForCityProduction,
+                   var upgradesTo: ArrayBuffer[GameUnitTypeView]) extends GameUnitTypeView {}
 
 
-object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
+object GameUnitType extends DilatedConverter[GameUnitType] {
 
   import ConfigLoader._
 
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): GameUnitTypeImpl = {
-    new GameUnitTypeImpl(
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): GameUnitType = {
+    new GameUnitType(
       name = config.getString("name"),
       movingOn = config.moveEnv("moveOn"),
       isMilitary = config.getBoolean("military"),
@@ -165,7 +165,7 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       possibleActions = new ArrayBuffer[GameUnitActionType]() ++
         config.getOption[Config]("actions").map(_.asLinked[Seq[GameUnitActionType]]).getOrElse(List.empty),
       requirements = config.asLinked[RequirementForCityProduction]("requirements"),
-      upgradesTo = new ArrayBuffer[GameUnitType]()
+      upgradesTo = new ArrayBuffer[GameUnitTypeView]()
     ) {
       this.doLate {
         upgradesTo ++= config.getStrings("upgradesTo").map(gameRules.unitTypes(_))

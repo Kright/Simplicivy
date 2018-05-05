@@ -20,7 +20,7 @@
 package com.github.kright.worldmodel.units
 
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.GameUnitType
+import com.github.kright.worldmodel.gamerules.GameUnitTypeView
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
@@ -44,7 +44,7 @@ trait GameUnitView extends MapPosition {
 
   def maxHp: Int
 
-  def unitType: GameUnitType
+  def unitType: GameUnitTypeView
 
   def owner: CountryLink
 }
