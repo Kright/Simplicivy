@@ -78,12 +78,16 @@ object ConfigLoader {
       getOption.read(config, path)
 
     def getNamedEntries(path: String): Seq[Config] = {
-      val names = config.getObject(path).keySet().asScala.toSeq
+      if (!config.hasPath(path))
+        return List.empty
+
       val innerConf = config.getConfig(path)
-      names.map { name =>
+      config.getKeys(path).map { name =>
         innerConf.getConfig(name).withValue("name", ConfigValueFactory.fromAnyRef(name))
       }
     }
+
+    def getKeys(path: String): Seq[String] = config.getObject(path).keySet().asScala.toSeq
   }
 
   implicit class DoLateExt[T](val a: T) extends AnyVal {
@@ -103,6 +107,7 @@ object ConfigLoader {
   implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeTypeImpl] = LandUpgradeType
   implicit val converterGameUnitType: DilatedConverter[GameUnitTypeImpl] = GameUnitType
   implicit val convertNationImpl: DilatedConverter[NationImpl] = Nation
+  implicit val convertGameUnitActionType: DilatedConverter[GameUnitActionType] = GameUnitActionType
 
 
   implicit val getIntOption: ConfigGetOption[Int] = new ConfigGetOption[Int](_.getInt(_))

@@ -108,7 +108,19 @@ class ConfigLoaderBigTest extends FunSuite {
       |   standardLevels = [{exp: 0, hp: 2}, {exp: 2, hp: 3}, {exp: 10, hp: 4}, {exp: 20, hp: 5}]
       |
       |   units = {
-      |     warrior {
+      |     settler {
+      |       moveOn = land
+      |       military = false
+      |       maintenance = 0
+      |       actions {
+      |         buildCity {}
+      |       }
+      |       requirements = {
+      |         cost: 10
+      |         citizens: 2
+      |       }
+      |     }
+      |     warrior = {
       |       moveOn = land
       |       military = true
       |       levels = ${standardLevels}
@@ -118,18 +130,14 @@ class ConfigLoaderBigTest extends FunSuite {
       |       maintenance = 1
       |       upgradesTo = swordsman
       |     }
-      |     swordsman {
-      |       moveOn = land
-      |       military = true
-      |       levels = ${standardLevels}
-      |       landMoves = {moves = 1}
+      |     swordsman = ${units.warrior} {
       |       meleeCombat = {attack = 3, defence = 2}
-      |       maintenance = 1
       |       requirements = {
       |         cost = 10
       |         technology = military
       |         resources = iron
       |       }
+      |       upgradesTo = null
       |     }
       |     boat {
       |       moveOn = water
@@ -187,7 +195,7 @@ class ConfigLoaderBigTest extends FunSuite {
 
     assert(rules.technologies.all.size == 4)
     assert(rules.nations.all.size == 3)
-    assert(rules.unitTypes.all.size == 3)
+    assert(rules.unitTypes.all.size == 4)
     assert(rules.langUpgradeTypes.all.size == 2)
     assert(rules.cityBuildings.all.size == 4)
     assert(rules.resources.all.size == 3)

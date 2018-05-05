@@ -23,6 +23,7 @@ import com.github.kright.utils.DilatedExecutor
 import com.typesafe.config.Config
 
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
@@ -94,7 +95,7 @@ class WaterMoving(val moves: Int,
   * some units (like tanks or catapults) can't move in mountains without roads
   */
 class LandMoving(val moves: Int,
-                 val onlyOnRoads: Set[TerrainType])
+                 val onlyOnRoads: mutable.Set[TerrainType])
 
 
 /**
@@ -152,7 +153,7 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       movingOn = config.moveEnv("moveOn"),
       isMilitary = config.getBoolean("military"),
       levels = config.getConfigs("levels").map(_.level),
-      landMoves = null, // LandMoves
+      landMoves = config.getOption[Config]("landMoves").map(_.landMoves),
       seaMoves = config.getOption[Config]("seaMoves").map(c => new WaterMoving(c.getInt("moves"), c.getInt("maxDepth"))),
       meleeCombat = config.getOption[Config]("meleeCombat").map(_.meleeCombat),
       rangeAttack = config.getOption[Config]("rangeAttack").map(_.rangeAttack),
@@ -161,17 +162,11 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       visibilityModel = config.getOption[Config]("visibilityModel").map(_.visibility).getOrElse(DirectVisibility),
       maxCarriedUnits = config.getOption[Int]("carriedUnits").getOrElse(0),
       maintenanceCost = config.getInt("maintenance"),
-      possibleActions = new ArrayBuffer[GameUnitActionType](), //todo,
+      possibleActions = new ArrayBuffer[GameUnitActionType]() ++ config.getNamedEntries("actions").map(_.asLinked[GameUnitActionType]),
       requirements = config.asLinked[RequirementForCityProduction]("requirements"),
       upgradesTo = new ArrayBuffer[GameUnitType]()
     ) {
       this.doLate {
-        landMoves = config.getOption[Config]("landMoves").map { c =>
-          new LandMoving(
-            c.getInt("moves"),
-            c.getStrings("onlyOnRoads").map(gameRules.terrainTypes(_)).toSet)
-        }
-
         upgradesTo ++= config.getStrings("upgradesTo").map(gameRules.unitTypes(_))
       }
     }
@@ -192,6 +187,17 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       c.getOption[Int]("attacksPerMove").getOrElse(1),
       c.getOption[Boolean]("canAttackFromWater").getOrElse(false)
     )
+
+    def landMoves(implicit gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandMoving = {
+      new LandMoving(
+        moves = c.getInt("moves"),
+        onlyOnRoads = new mutable.HashSet[TerrainType]()
+      ) {
+        this.doLate {
+          onlyOnRoads ++= c.getStrings("onlyOnRoads").map(gameRules.terrainTypes(_))
+        }
+      }
+    }
 
     def rangeAttack: RangeAttack = new RangeAttack(
       c.getInt("strength"),
