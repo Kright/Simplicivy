@@ -17,29 +17,42 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright
+package com.github.kright.utils
 
-import com.badlogic.gdx._
-import com.badlogic.gdx.math.Vector2
-import com.github.kright.gui.mobile.LoadingScreen
-import com.github.kright.utils.FPSMeasure
+/**
+  * Created by Igor Slobodskov on 05 May 2018
+  */
+class FPSMeasure {
 
+  private def now(): Long = System.nanoTime()
 
-object MainGame extends Game {
-  val screenSize = new Vector2()
-  val fps = new FPSMeasure()
+  private var prev: Long = now()
+  private var t: Long = now()
+  private var dt: Long = 0
+  private var maxDt: Long = 0
 
-  override def create(): Unit = {
-    setScreen(new LoadingScreen)
+  private var ticks: Int = 0
+  private var framesPerSec: Int = 0
+
+  def tick(): Unit = {
+    ticks += 1
+    val current = now()
+    dt = current - t
+    t = current
+    val oneSecond = 1000000000L
+    if (current - prev > oneSecond) {
+      framesPerSec = ticks
+      ticks = 0
+      prev = current
+      maxDt = 0
+    }
+
+    if (dt > maxDt) {
+      maxDt = dt
+    }
   }
 
-  override def resize(width: Int, height: Int): Unit = {
-    super.resize(width, height)
-    screenSize.set(width, height)
-  }
+  def fps: Int = framesPerSec
 
-  override def render(): Unit = {
-    super.render()
-    fps.tick()
-  }
+  def maxDeltaNs: Long = maxDt
 }

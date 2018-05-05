@@ -20,12 +20,15 @@
 package com.github.kright.gui.mobile
 
 
+import com.badlogic.gdx.graphics.g2d.{BitmapFont, SpriteBatch}
 import com.badlogic.gdx.{Gdx, ScreenAdapter}
 import com.badlogic.gdx.graphics.{GL20, Texture}
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.{Image, Table}
 import com.badlogic.gdx.utils.Scaling
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import com.github.kright.MainGame
+import com.github.kright.gui.FPSLabel
 
 /**
   * Created by Igor Slobodskov on 05 May 2018
@@ -35,10 +38,19 @@ class MainScreen extends ScreenAdapter {
   private val image: Image = new Image(texture) {
     setScaling(Scaling.none)
   }
+
+  private val rootTable = new Table()
+
+  private val fpsWidget = new FPSLabel(MainGame.fps, MainGame.screenSize)
+
   private val mainViewport = new ScreenViewport()
   private val stage = new Stage(mainViewport) {
     addActor(image)
+    addActor(fpsWidget)
   }
+
+  private val bitmapFont = new BitmapFont()
+  private val batch = new SpriteBatch(256)
 
   private def now = System.currentTimeMillis()
 
@@ -58,6 +70,7 @@ class MainScreen extends ScreenAdapter {
 
   override def resize(width: Int, height: Int): Unit = {
     stage.getViewport.update(width, height, true)
+    batch.getProjectionMatrix.setToOrtho2D(0, 0, width, height)
   }
 
   override def dispose(): Unit = {

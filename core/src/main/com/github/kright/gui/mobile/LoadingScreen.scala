@@ -45,7 +45,7 @@ class LoadingScreen extends ScreenAdapter {
 
   Timer.schedule(new Task {
     override def run(): Unit = MainGame.setScreen(new MainScreen())
-  }, 3f)
+  }, 0.5f)
 
   override def hide(): Unit = {
     Gdx.input.setInputProcessor(null)
