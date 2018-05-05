@@ -17,35 +17,23 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright
+package com.github.kright.worldmodel
 
-import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.github.kright.worldmodel.gamerules.ConfigLoader
+import com.github.kright.worldmodel.country.{Country, CountryLink}
+import com.github.kright.worldmodel.worldmap.SimpleMap
 
+import scala.collection.mutable.ArrayBuffer
 
-class Main extends ApplicationAdapter {
-  private var batch: SpriteBatch = _
-  private var img: Texture = _
+/**
+  * Created by Igor Slobodskov on 05 May 2018
+  */
+class GameWorld(val baseMap: SimpleMap) {
 
-  override def create(): Unit = {
-    batch = new SpriteBatch()
-    img = new Texture("badlogic.jpg")
-  }
+  val countries: ArrayBuffer[Country] = new ArrayBuffer[Country]()
 
-  override def render(): Unit = {
-    Gdx.gl.glClearColor(1, 0, 0, 1)
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-    batch.begin()
-    batch.draw(img, 0, 0)
-    batch.end()
-  }
+  var stepsCount: Int = 0
+}
 
-  override def dispose(): Unit = {
-    batch.dispose()
-    img.dispose()
-  }
+class PlayerEnvironment(private val world: GameWorld, private val country: Country) {
+
 }

@@ -19,11 +19,6 @@
 
 package com.github.kright.worldmodel.country
 
-import com.github.kright.worldmodel.city.CityView
-import com.github.kright.worldmodel.gamerules.{GameRules, HasName}
-import com.github.kright.worldmodel.science.PlayerTechnologies
-import com.github.kright.worldmodel.units.GameUnitView
-
 /**
   * Created by Igor Slobodskov on 26 April 2018
   *
@@ -31,21 +26,4 @@ import com.github.kright.worldmodel.units.GameUnitView
   */
 trait CountryLink {
   // may there would be view of current player for this country or something else
-}
-
-
-trait Country extends HasName {
-
-  //different counties may have different units types, buildings and etc.
-  def gameRules: GameRules
-
-  def cities: Seq[CityView]
-
-  def units: Seq[GameUnitView]
-
-  def gold: Int
-
-  def culture: Int
-
-  def science: PlayerTechnologies
 }

@@ -33,7 +33,10 @@ trait CityView extends MapPosition {
   def citizensCount: Int
 
   def owner: CountryLink
+}
 
+
+trait CityOwnerView extends CityView {
   def buildings: Seq[CityBuilding]
 
   def production: CellProductionView

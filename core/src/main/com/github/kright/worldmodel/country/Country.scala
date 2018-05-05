@@ -19,18 +19,18 @@
 
 package com.github.kright.worldmodel.country
 
-import com.github.kright.worldmodel.city.CityView
-import com.github.kright.worldmodel.gamerules.NationView
+import com.github.kright.worldmodel.gamerules.{Nation, NationView}
+import com.github.kright.worldmodel.science.PlayerScience
 import com.github.kright.worldmodel.worldmap.PlayerMapView
 
 /**
-  * Created by Igor Slobodskov on 02 May 2018
+  * Created by Igor Slobodskov on 05 May 2018
   */
-trait CountryView {
+class Country(val map: PlayerMapView,
+              val nations: Nation,
+              val science: PlayerScience) {
 
-  def nation: NationView
-
-  def units: Seq[Unit]
-
-  def cities: Seq[CityView]
+  var exists: Boolean = true // country may be defeated
 }
+
+//todo traits for "own country" and "country"
