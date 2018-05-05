@@ -69,14 +69,14 @@ class ConfigLoaderBigTest extends FunSuite {
       |
       |   cityBuildings = {
       |     walls {
-      |       requires = {
+      |       requires {
       |         cost = 10
       |         technology = [military, peaceful]
       |       }
       |       effects {maintenance: 2, defence: 2}
       |     }
       |     watermill {
-      |       requires = {
+      |       requires {
       |         cost = 10
       |         technology = complex
       |         requireRiver = true
@@ -84,7 +84,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |       effects {maintenance: 1, productionBonus: 1}
       |     }
       |     library {
-      |       requires = {
+      |       requires {
       |         cost = 20
       |         technology = simple
       |       }
@@ -116,8 +116,40 @@ class ConfigLoaderBigTest extends FunSuite {
       |         buildCity {}
       |       }
       |       requirements = {
-      |         cost: 10
+      |         cost: 20
       |         citizens: 2
+      |       }
+      |     }
+      |     worker {
+      |       moveOn = land
+      |       military = false
+      |       maintenance = 1
+      |       landMoves = {moves = 1}
+      |       actions {
+      |         destroy {}
+      |         buildRoad = [
+      |           {moves:3, require {terrain = grass}}
+      |           {moves:5, require {terrain = hills}}
+      |         ]
+      |         terraforming = [
+      |           { to:grass, moves: 10, require {terrain: hills, technology = complex }}
+      |         ]
+      |         upgradeLand = [
+      |           {
+      |             upgrade: farm,
+      |             moves = 5,
+      |             require { terrain = [grass, hills], technology = peaceful}
+      |           }
+      |           {
+      |             upgrade: castle
+      |             moves = 10
+      |             require { terrain = [grass, hills], technology = military}
+      |           }
+      |         ]
+      |       }
+      |       requirements = {
+      |         cost = 10
+      |         citizens = 1
       |       }
       |     }
       |     warrior = {
@@ -126,8 +158,9 @@ class ConfigLoaderBigTest extends FunSuite {
       |       levels = ${standardLevels}
       |       landMoves = {moves = 1}
       |       meleeCombat = {attack = 1, defence = 1}
-      |       requirements = {cost = 5}
+      |       requirements = {cost = 5, citizens:1}
       |       maintenance = 1
+      |       actions { destroy{} }
       |       upgradesTo = swordsman
       |     }
       |     swordsman = ${units.warrior} {
@@ -195,7 +228,7 @@ class ConfigLoaderBigTest extends FunSuite {
 
     assert(rules.technologies.all.size == 4)
     assert(rules.nations.all.size == 3)
-    assert(rules.unitTypes.all.size == 4)
+    assert(rules.unitTypes.all.size == 5)
     assert(rules.langUpgradeTypes.all.size == 2)
     assert(rules.cityBuildings.all.size == 4)
     assert(rules.resources.all.size == 3)

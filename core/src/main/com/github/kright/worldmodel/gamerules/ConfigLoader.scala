@@ -107,7 +107,7 @@ object ConfigLoader {
   implicit val converterLandUpgradeType: DilatedConverter[LandUpgradeTypeImpl] = LandUpgradeType
   implicit val converterGameUnitType: DilatedConverter[GameUnitTypeImpl] = GameUnitType
   implicit val convertNationImpl: DilatedConverter[NationImpl] = Nation
-  implicit val convertGameUnitActionType: DilatedConverter[GameUnitActionType] = GameUnitActionType
+  implicit val convertGameUnitActionType: DilatedConverter[Seq[GameUnitActionType]] = GameUnitActionType
 
 
   implicit val getIntOption: ConfigGetOption[Int] = new ConfigGetOption[Int](_.getInt(_))

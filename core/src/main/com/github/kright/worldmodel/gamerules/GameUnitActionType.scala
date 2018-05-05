@@ -52,39 +52,50 @@ case class BuildRoad(moves: Int,
 class CellActionRequirement(var terrain: mutable.Set[TerrainType] = new mutable.HashSet[TerrainType](),
                             var technology: ArrayBuffer[TechnologyDescription] = new ArrayBuffer[TechnologyDescription]())
 
-object GameUnitActionType extends DilatedConverter[GameUnitActionType] {
+object GameUnitActionType extends DilatedConverter[Seq[GameUnitActionType]] {
 
   import ConfigLoader._
 
-  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): GameUnitActionType = {
-    config.getString("name") match {
-      case "buildCity" => BuildCity
-      case "destroy" => Destroy
-      case "terraforming" => new Terraforming(
-        to = null, //late init
-        moves = config.getInt("moves"),
-        requirement = cellActionRequirement(config.getConfig("requirement"))
+  override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): Seq[GameUnitActionType] = {
+    val all = new ArrayBuffer[GameUnitActionType]()
+
+    if (config.hasPath("buildCity"))
+      all += BuildCity
+
+    if (config.hasPath("destroy"))
+      all += Destroy
+
+    all ++= config.getConfigs("buildRoad").map { c =>
+      BuildRoad(c.getInt("moves"), cellActionRequirement(c.getConfig("require")))
+    }
+
+    all ++= config.getConfigs("upgradeLand").map { c =>
+      new BuildingLandUpgrade(
+        upgrade = null,
+        moves = c.getInt("moves"),
+        requirement = cellActionRequirement(c.getConfig("require"))
       ) {
         this.doLate {
-          to = gameRules.terrainTypes(config.getString("terrain"))
+          upgrade = gameRules.langUpgradeTypes(c.getString("upgrade"))
         }
       }
-      case "landUpgrade" => new BuildingLandUpgrade(
-        upgrade = null, //late init
-        moves = config.getInt("moves"),
-        requirement = cellActionRequirement(config.getConfig("requirement"))) {
-        this.doLate {
-          upgrade = gameRules.langUpgradeTypes(config.getString("upgrade"))
-        }
-      }
-      case "buildRoad" => BuildRoad(
-        moves = config.getInt("moves"),
-        requirement = cellActionRequirement(config.getConfig("requirement"))
-      )
-      case actionName: String => throw new ParsingError(
-        s"unknown action name: $actionName at line ${config.origin().lineNumber()} in $config")
     }
+
+    all ++= config.getConfigs("terraforming").map { c =>
+      new Terraforming(
+        to = null, //late init
+        moves = c.getInt("moves"),
+        requirement = cellActionRequirement(c.getConfig("require"))
+      ) {
+        this.doLate {
+          to = gameRules.terrainTypes(c.getString("to"))
+        }
+      }
+    }
+
+    all
   }
+
 
   private def cellActionRequirement(cfg: Config)(implicit gameRules: GameRules, dilatedExecutor: DilatedExecutor): CellActionRequirement =
     new CellActionRequirement() {

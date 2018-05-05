@@ -162,7 +162,8 @@ object GameUnitType extends DilatedConverter[GameUnitTypeImpl] {
       visibilityModel = config.getOption[Config]("visibilityModel").map(_.visibility).getOrElse(DirectVisibility),
       maxCarriedUnits = config.getOption[Int]("carriedUnits").getOrElse(0),
       maintenanceCost = config.getInt("maintenance"),
-      possibleActions = new ArrayBuffer[GameUnitActionType]() ++ config.getNamedEntries("actions").map(_.asLinked[GameUnitActionType]),
+      possibleActions = new ArrayBuffer[GameUnitActionType]() ++
+        config.getOption[Config]("actions").map(_.asLinked[Seq[GameUnitActionType]]).getOrElse(List.empty),
       requirements = config.asLinked[RequirementForCityProduction]("requirements"),
       upgradesTo = new ArrayBuffer[GameUnitType]()
     ) {
