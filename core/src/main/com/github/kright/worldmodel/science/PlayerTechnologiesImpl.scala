@@ -28,8 +28,8 @@ import scala.collection.mutable.ArrayBuffer
   * Created by Igor Slobodskov on 27 April 2018
   */
 private class PlayerTechnologiesImpl(implicit gameRules: GameRules) extends PlayerTechnologies {
-  @inline
-  implicit def playerTechnologies: PlayerTechnologies = this
+
+  private implicit def playerTechnologies: PlayerTechnologies = this
 
   private val researchedList = new ArrayBuffer[TechnologyDescriptionView]()
   private val researchedSet = new mutable.HashSet[TechnologyDescriptionView]()

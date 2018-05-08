@@ -39,7 +39,6 @@ class PlayerMapView(private val simpleMap: SimpleMap,
 
   override def allCells: Seq[MapCell] = table.array.view
 
-  @inline
   private def update(p: MapPosition, value: MapCell): Unit = table(p.x, p.y) = value
 
   /* open cell and return it */

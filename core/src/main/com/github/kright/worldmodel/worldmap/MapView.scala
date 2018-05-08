@@ -39,10 +39,8 @@ trait MapView[+T <: MapCell] {
   def allCells: Seq[T] //return view of data
 
 
-  @inline
   def visibleCells: Seq[T] = allCells.filter(_.visibility == Visible)
 
-  @inline
   def knownCells: Seq[T] = allCells.filter(_.visibility.isKnown)
 
   def allCities: Seq[CityView] = knownCells.flatMap(_.city)

@@ -39,17 +39,13 @@ class MapTopology(val width: Int, val height: Int, val wrapX: Boolean = true, va
   }
 
   /* with invalid position may work incorrect! */
-  @inline
   def wrappedX(p: Position): Int = wrap(p.x, width)
 
   /* with invalid position may work incorrect! */
-  @inline
   def wrappedY(p: Position): Int = wrap(p.y, height)
 
-  @inline
   private def inRange(v: Int, max: Int): Boolean = v >= 0 && v < max
 
-  @inline
   private def wrap(x: Int, modulo: Int): Int = {
     var result = x % modulo
     if (result < 0)

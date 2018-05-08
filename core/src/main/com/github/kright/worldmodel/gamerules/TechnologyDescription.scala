@@ -34,10 +34,8 @@ trait TechnologyDescriptionView extends HasName {
   def requiredTechnologies: Seq[TechnologyDescriptionView]
 
 
-  @inline
   def isResearched(implicit playerTech: PlayerTechnologies): Boolean = playerTech.isResearched(this)
 
-  @inline
   def isAvailable(implicit playerTech: PlayerTechnologies): Boolean =
     !isResearched && requiredTechnologies.forall(_.isResearched)
 }

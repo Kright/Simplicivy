@@ -28,7 +28,6 @@ trait TerrainTypeView extends HasName {
 
   def isLand: Boolean
 
-  @inline
   def isWater: Boolean = !isLand
 
   /**

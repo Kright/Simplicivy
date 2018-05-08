@@ -28,9 +28,6 @@ object LibgdxExt {
 
   implicit class VectorExt[Vec <: LibgdxVector[Vec]](val a: Vec) extends AnyVal {
 
-    // syntax sugar
-    // todo compare compiled bytecode with @inline and without
-
     def :=(value: Vec): Unit = a.set(value)
 
     def +=(delta: Vec): Unit = a.add(delta)
@@ -41,7 +38,6 @@ object LibgdxExt {
 
     def *=(v: Vec): Unit = a.scl(v)
 
-    @inline
     def /=(f: Float): Unit = a *= (1f / f)
 
     // create new objects
@@ -54,13 +50,10 @@ object LibgdxExt {
 
     def *(v: Vec): Vec = a.cpy().scl(v)
 
-    @inline
     def /(div: Float): Unit = a.cpy().scl(1f / div)
 
-    @inline
     def ==(v: Vec): Boolean = a.epsilonEquals(v, 0.000001f)
 
-    @inline
     def !=(v: Vec): Boolean = a != v
   }
 
