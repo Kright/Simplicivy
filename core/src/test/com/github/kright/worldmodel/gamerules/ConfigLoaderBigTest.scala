@@ -125,9 +125,14 @@ class ConfigLoaderBigTest extends FunSuite {
       |     }
       |   }
       |
-      |   landUpgrades = {
-      |     farm = {resources = [fur]}
-      |     castle = {}
+      |   landUpgrades {
+      |     farm {
+      |         resources = [fur],
+      |         production {foodMultiplier:2, commerceMultiplier:2}
+      |     }
+      |     castle = {
+      |         defenceBonus = 5
+      |     }
       |   }
       |
       |   standardLevels = [{exp: 0, hp: 2}, {exp: 2, hp: 3}, {exp: 10, hp: 4}, {exp: 20, hp: 5}]
