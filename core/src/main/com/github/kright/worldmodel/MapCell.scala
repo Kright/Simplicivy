@@ -41,6 +41,12 @@ trait MapCell extends MapPosition with TerrainParams {
     * @return if shadowed return self else make shadowed copy
     */
   def getShadowed(): MapCell
+
+  def mayContainUnitsOf(player: CountryLink): Boolean = {
+    if (city.exists(_.owner != player)) return false
+    if (units.exists(_.owner != player)) return false
+    true
+  }
 }
 
 
@@ -61,4 +67,11 @@ trait TerrainParams {
   def road: RoadType
 
   def hasPollution: Boolean
+
+
+  def movementCost: Int = biom.movementCost + modifier.map(_.additionalMovementCost).getOrElse(0)
+
+  def isLand: Boolean = biom.isLand
+
+  def isWater: Boolean = !isLand
 }

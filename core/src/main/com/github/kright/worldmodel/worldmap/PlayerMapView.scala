@@ -37,6 +37,11 @@ class PlayerMapView(private val simpleMap: SimpleMap,
 
   override def apply(p: MapPosition): MapCell = table(p.x, p.y)
 
+  override def apply(validX: Int, validY: Int): MapCell = {
+    assert(topology.isValid(validX, validY))
+    table(topology.wrappedX(validX, validY), topology.wrappedY(validY))
+  }
+
   override def allCells: Seq[MapCell] = table.array.view
 
   private def update(p: MapPosition, value: MapCell): Unit = table(p.x, p.y) = value

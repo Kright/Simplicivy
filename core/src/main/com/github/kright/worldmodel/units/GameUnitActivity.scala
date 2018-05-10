@@ -19,6 +19,7 @@
 
 package com.github.kright.worldmodel.units
 
+import com.github.kright.worldmodel.MapCell
 import com.github.kright.worldmodel.gamerules.{RoadType, TerrainModifier}
 import com.github.kright.worldmodel.worldmap.MapPosition
 
@@ -30,22 +31,47 @@ import com.github.kright.worldmodel.worldmap.MapPosition
   */
 sealed trait GameUnitActivity
 
-case object AwaitingOrders extends GameUnitActivity
+object GameUnitActivity {
 
-case object Idle extends GameUnitActivity
+  case object AwaitingOrders extends GameUnitActivity
 
-case object Defence extends GameUnitActivity
+  case object Idle extends GameUnitActivity
 
-case class MoveTo(p: MapPosition) extends GameUnitActivity
+  case object Defence extends GameUnitActivity
 
-case class BuildSomething(build: WorkerTask) extends GameUnitActivity
+  case object BuildCity extends GameUnitActivity
+
+  case class MoveTo(p: MapPosition, unit: GameUnitView) extends GameUnitActivity
+
+  case class BuildSomething(build: WorkerTask) extends GameUnitActivity
+
+  case class Attack(task: AttackType, attacker: GameUnitView, attacked: MapCell) extends GameUnitActivity
+
+}
 
 
-// todo fix case when more than one worker do same task
 sealed trait WorkerTask
 
-case class BuildRoad(road: RoadType, remainingProgress: Int) extends WorkerTask
+object WorkerTask {
 
-case class BuildLandImprovement(improvement: RoadType, remainingProgress: Int) extends WorkerTask
+  // todo fix case when more than one worker do same task
 
-case class ChangeTerrainModifier(newModifer: TerrainModifier) extends WorkerTask
+  case class BuildRoad(road: RoadType, remainingProgress: Int) extends WorkerTask
+
+  case class BuildLandImprovement(improvement: RoadType, remainingProgress: Int) extends WorkerTask
+
+  case class ChangeTerrainModifier(newModifier: TerrainModifier) extends WorkerTask
+
+}
+
+sealed trait AttackType
+
+object AttackType {
+
+  case object MeleeAttack extends AttackType
+
+  case object RangeAttack extends AttackType
+
+  case object AirBombardment extends AttackType
+
+}

@@ -22,17 +22,25 @@ package com.github.kright.worldmodel.gamerules
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-sealed trait RoadType
+sealed trait RoadType {
+  def isRoad: Boolean
+}
 
-case object NoRoad extends RoadType
+case object NoRoad extends RoadType {
+  override def isRoad: Boolean = false
+}
 
 /**
   * @param movesMultiplier how much faster units move on roads
   */
-case class Road(movesMultiplier: Int) extends RoadType
+case class Road(movesMultiplier: Int) extends RoadType {
+  override def isRoad: Boolean = true
+}
 
 /**
   * @param maxDistance max distance for moving on railroad
   *                    distance doesn't depends on moves count of unit
   */
-case class Railroad(maxDistance: Int) extends RoadType
+case class Railroad(maxDistance: Int) extends RoadType {
+  override def isRoad: Boolean = true
+}

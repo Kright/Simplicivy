@@ -24,6 +24,8 @@ import com.github.kright.worldmodel.country.CountryLink
 import com.github.kright.worldmodel.units.GameUnitView
 import com.github.kright.worldmodel.{MapCell, Visible}
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * Created by Igor Slobodskov on 26 April 2018
   *
@@ -35,6 +37,8 @@ trait MapView[+T <: MapCell] {
   def apply(p: MapPosition): T
 
   def apply(p: Position): T = apply(p.asMapPosition)
+
+  def apply(validX: Int, validY: Int): T
 
   def allCells: Seq[T] //return view of data
 
@@ -56,7 +60,45 @@ trait MapView[+T <: MapCell] {
   def playerResources(owner: CountryLink): Seq[T] = knownCells.filter(_.resource.isDefined)
 
   //range 0: one cell, 1: 6 neighbor cells
-  def allCellsInRange(center: MapPosition, range: Int): Seq[T] = ??? //todo
+  def allCellsInRange(x: Int, y: Int, range: Int): Seq[T] = {
+    val arr = new ArrayBuffer[T]()
+
+    for (dy <- -range to range; dx <- -range to range) {
+      if (topology.isValid(x + dx, y + dy) && topology.distance(x, y, x + dx, y + dy) <= range) {
+        arr += this (x + dx, y + dy)
+      }
+    }
+
+    arr
+  }
+
+  def allCellsInRange(center: MapPosition, range: Int): Seq[T] =
+    allCellsInRange(center.x, center.y, range)
+
+  def neighbors(c: MapPosition): Seq[T] = neighbors(c.x, c.y)
+
+  def neighbors(x: Int, y: Int): Seq[T] = {
+    val arr = new ArrayBuffer[T]()
+
+    def add(dx: Int, dy: Int): Unit = {
+      val lx = x + dx
+      val ly = y + dy
+      if (topology.isValid(lx, ly)) {
+        if (topology.distance(x, y, lx, ly) == 1) {
+          arr += this (lx, ly)
+        }
+      }
+    }
+
+    add(1, 0)
+    add(0, 1)
+    add(-1, 0)
+    add(0, -1)
+    add(1, -1)
+    add(-1, 1)
+
+    arr
+  }
 
   def findPath(unit: Unit, to: MapPosition): Seq[T] = ??? //todo
 }
