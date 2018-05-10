@@ -95,7 +95,7 @@ class WaterMoving(val moves: Int,
   * some units (like tanks or catapults) can't move in mountains without roads
   */
 class LandMoving(val moves: Int,
-                 val onlyOnRoads: mutable.Set[TerrainTypeView])
+                 val requireRoadsOnHills: Boolean)
 
 
 /**
@@ -164,7 +164,7 @@ object GameUnitType extends DilatedConverter[GameUnitType] {
       maintenanceCost = config.getInt("maintenance"),
       possibleActions = new ArrayBuffer[GameUnitActionType]() ++
         config.getOption[Config]("actions").map(_.asLinked[Seq[GameUnitActionType]]).getOrElse(List.empty),
-      requirements = config.asLinked[RequirementForCityProduction]("requirements"),
+      requirements = config.asLinked[RequirementForCityProduction]("require"),
       upgradesTo = new ArrayBuffer[GameUnitTypeView]()
     ) {
       this.doLate {
@@ -189,16 +189,10 @@ object GameUnitType extends DilatedConverter[GameUnitType] {
       c.getOption[Boolean]("canAttackFromWater").getOrElse(false)
     )
 
-    def landMoves(implicit gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandMoving = {
-      new LandMoving(
-        moves = c.getInt("moves"),
-        onlyOnRoads = new mutable.HashSet[TerrainTypeView]()
-      ) {
-        this.doLate {
-          onlyOnRoads ++= c.getStrings("onlyOnRoads").map(gameRules.terrainTypes(_))
-        }
-      }
-    }
+    def landMoves(): LandMoving = new LandMoving(
+      moves = c.getInt("moves"),
+      requireRoadsOnHills = c.getOption[Boolean]("requireRoadsOnHills").getOrElse(false)
+    )
 
     def rangeAttack: RangeAttack = new RangeAttack(
       c.getInt("strength"),

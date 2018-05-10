@@ -40,31 +40,56 @@ class ConfigLoaderBigTest extends FunSuite {
       |      complex = { cost = 20, requiredTechnologies = [military, peaceful]}
       |   }
       |
-      |   terrainTypes {
-      |      grass {
-      |         isLand = true
-      |         height = 1
+      |   bioms {
+      |      grassland {
+      |         land = true
       |         movementCost = 1
+      |         defenceBonus = 0
       |         produces {food: 2, production: 1, commerce: 1}
       |      }
       |      sea {
-      |         isLand = false
+      |         water = true
       |         height = -2
       |         produces {food: 1, commerce: 1}
       |      }
-      |      hills {
-      |         isLand = true
-      |         height = 2
-      |         movementCost = 2
-      |         defenceBonus = 1
-      |         produces {food: 1, production: 2, commerce: 2}
+      |      desert {
+      |         produces {food: 0, production: 1, commerce: 0}
+      |      }
+      |      snow {
+      |         produces {food: 1, production: 1}
+      |      }
+      |   }
+      |
+      |   terrainModifiers {
+      |      forest {
+      |         produces {production: 1, commerce: 1}
+      |         addMoveCost = 1
+      |         addDefenceBonus = 2
+      |         require{ bioms = [grassland, snow] }
+      |      }
+      |      oasis {
+      |         produces {food: 3, production: 1, commerce: 1}
+      |         require {}
+      |      }
+      |      rifs {
+      |         addMoveCost = 4
+      |         addDefenceBonus = 1
+      |         require {onWater = true}
+      |      }
+      |      floodplain {
+      |         produces {food: 2}
+      |         require {
+      |             onlyHeight = 0
+      |             onLand = true
+      |             river = true
+      |         }
       |      }
       |   }
       |
       |   resources {
-      |     fish = {kind=bonus, bonus {food:3}, terrain = [sea]}
-      |     iron = {name = iron, kind=strategic, bonus {production: 3}, terrain = [hills], technology = military}
-      |     fur = {kind=luxury, bonus {food: 1, commerce: 2}, terrain = [hills, grass]}
+      |     fish = {kind=bonus, bonus {food:3}, bioms = sea}
+      |     iron = {name = iron, kind=strategic, bonus {production: 3}, terrain = [grassland, desert, snow], technology = military}
+      |     fur = {kind=luxury, bonus {food: 1, commerce: 2}, terrain = [grassland]}
       |   }
       |
       |   cityBuildings = {
@@ -115,7 +140,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |       actions {
       |         buildCity {}
       |       }
-      |       requirements = {
+      |       require {
       |         cost: 20
       |         citizens: 2
       |       }
@@ -147,7 +172,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |           }
       |         ]
       |       }
-      |       requirements = {
+      |       require = {
       |         cost = 10
       |         citizens = 1
       |       }
@@ -158,14 +183,14 @@ class ConfigLoaderBigTest extends FunSuite {
       |       levels = ${standardLevels}
       |       landMoves = {moves = 1}
       |       meleeCombat = {attack = 1, defence = 1}
-      |       requirements = {cost = 5, citizens:1}
+      |       require = {cost = 5, citizens:1}
       |       maintenance = 1
       |       actions { destroy{} }
       |       upgradesTo = swordsman
       |     }
       |     swordsman = ${units.warrior} {
       |       meleeCombat = {attack = 3, defence = 2}
-      |       requirements = {
+      |       require = {
       |         cost = 10
       |         technology = military
       |         resources = iron
@@ -181,7 +206,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |       rangeAttack = {strength = 1, range: 1}
       |       carriedUnits = 1
       |       maintenance = 2
-      |       requirements = {
+      |       require = {
       |         cost = 30
       |         technology = simple
       |         requireSea = true
@@ -232,7 +257,6 @@ class ConfigLoaderBigTest extends FunSuite {
     assert(rules.langUpgradeTypes.all.size == 2)
     assert(rules.cityBuildings.all.size == 4)
     assert(rules.resources.all.size == 3)
-    assert(rules.terrainTypes.all.size == 3)
 
     assert(rules.technologies("military").requiredTechnologies(0).name == "simple")
   }

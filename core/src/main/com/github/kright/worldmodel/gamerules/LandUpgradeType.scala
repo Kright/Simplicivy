@@ -27,29 +27,31 @@ import scala.collection.mutable
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait LandUpgradeTypeView extends HasName {
-
-  def possibleTerrain: mutable.Set[TerrainTypeView]
-
-  def resources: ResourcesRequirement
-}
-
 sealed trait ResourcesRequirement
 
 case object AllowAll extends ResourcesRequirement
 
-case class ResourcesInList(permittedResources: Set[ResourceTypeView]) extends ResourcesRequirement
+case class ResourcesInList(permittedResources: Set[ResourceType]) extends ResourcesRequirement
 
 class LandUpgradeType(val name: String,
-                      var resources: ResourcesRequirement,
-                      val possibleTerrain: mutable.Set[TerrainTypeView]) extends LandUpgradeTypeView
+                      val productionBonus: CellProduction,
+                      val bioms: mutable.Set[Biom],
+                      val onlyOnHeight: Option[Int],
+                      val defenceBonus: Int,
+                      var resources: ResourcesRequirement) extends HasName
 
 object LandUpgradeType extends DilatedConverter[LandUpgradeType] {
 
   import ConfigLoader._
 
   override def convert(implicit config: Config, gameRules: GameRules, dilatedExecutor: DilatedExecutor): LandUpgradeType = {
-    new LandUpgradeType(config.getString("name"), null, new mutable.HashSet[TerrainTypeView]) {
+    new LandUpgradeType(
+      name = config.getString("name"),
+      productionBonus = config.getOption[Config]("production").map(_.as[CellProduction]).getOrElse(new CellProduction()),
+      bioms = new mutable.HashSet(),
+      onlyOnHeight = config.getOption[Int]("onlyHeight"),
+      defenceBonus = config.getOption[Int]("defenceBonus").getOrElse(0),
+      resources = null) { // late
       this.doLate {
         resources = if (config.hasPath("resources")) {
           ResourcesInList(config.getStrings("resources").map(gameRules.resources(_)).toSet)
@@ -57,7 +59,7 @@ object LandUpgradeType extends DilatedConverter[LandUpgradeType] {
           AllowAll
         }
 
-        possibleTerrain ++= config.getStrings("terrain").map(gameRules.terrainTypes(_))
+        bioms ++= config.getStrings("terrain").map(gameRules.bioms(_))
       }
     }
   }

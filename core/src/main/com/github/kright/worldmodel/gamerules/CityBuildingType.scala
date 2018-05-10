@@ -25,19 +25,9 @@ import com.typesafe.config.Config
 /**
   * Created by Igor Slobodskov on 27 April 2018
   */
-trait CityBuildingTypeView extends HasName {
-
-  def requires: RequirementForCityProduction
-
-  def cost: Int = requires.cost
-
-
-  def buildingEffect: BuildingEffectView
-}
-
 class CityBuildingType(val name: String,
                        var requires: RequirementForCityProduction,
-                       var buildingEffect: BuildingEffectView) extends CityBuildingTypeView
+                       var buildingEffect: BuildingEffectView) extends HasName
 
 
 trait BuildingEffectView {

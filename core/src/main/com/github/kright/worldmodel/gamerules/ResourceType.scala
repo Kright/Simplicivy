@@ -27,17 +27,6 @@ import scala.collection.mutable
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait ResourceTypeView extends HasName {
-
-  def resourceKind: ResourceKind
-
-  def requiredTerrain: mutable.Set[TerrainTypeView]
-
-  def requiredTechnology: Option[TechnologyDescriptionView]
-
-  def cellBonus: CellProductionView
-}
-
 sealed trait ResourceKind
 
 case object BonusResource extends ResourceKind
@@ -48,9 +37,9 @@ case object LuxuryResource extends ResourceKind
 
 class ResourceType(val name: String,
                    var resourceKind: ResourceKind,
-                   var requiredTerrain: mutable.Set[TerrainTypeView],
+                   val bioms: mutable.Set[Biom],
                    var requiredTechnology: Option[TechnologyDescriptionView],
-                   var cellBonus: CellProduction) extends ResourceTypeView
+                   var cellBonus: CellProduction) extends HasName
 
 object ResourceType extends DilatedConverter[ResourceType] {
 
@@ -63,12 +52,12 @@ object ResourceType extends DilatedConverter[ResourceType] {
         case "strategic" => StrategicResource
         case "luxury" => LuxuryResource
       },
-      requiredTerrain = new mutable.HashSet[TerrainTypeView](),
+      bioms = new mutable.HashSet(),
       requiredTechnology = None,
       cellBonus = config.getConfig("bonus").as[CellProduction]
     ) {
       this.doLate {
-        requiredTerrain ++= config.getStrings("terrain").map(gameRules.terrainTypes(_))
+        bioms ++= config.getStrings("bioms").map(gameRules.bioms(_))
         requiredTechnology = config.getOption[String]("technology").map(gameRules.technologies(_))
       }
     }

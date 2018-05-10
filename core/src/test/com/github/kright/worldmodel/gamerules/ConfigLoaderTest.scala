@@ -44,7 +44,7 @@ class ConfigLoaderTest extends FunSuite {
     assert(cp.production == 4)
   }
 
-  test("load BuildingEffectImpl") {
+  test("load BuildingEffect") {
     val cp = ConfigFactory.parseString(
       """
         |culture = 1
@@ -81,18 +81,5 @@ class ConfigLoaderTest extends FunSuite {
     assert(cp.productionBonus == 0)
     assert(cp.researchBonus == 0)
     assert(cp.taxBonus == 0)
-  }
-
-  test("load TerrainType") {
-    val t = parse("name = grass, isLand=true, height = 1, movementCost = 2, defenceBonus = 3, produces = {food = 4, production = 5, commerce = 6}").as[TerrainType]
-
-    assert(t.name == "grass")
-    assert(t.isLand == true)
-    assert(t.height == 1)
-    assert(t.movementCost == 2)
-    assert(t.defenceBonus == 3)
-    assert(t.produces.food == 4)
-    assert(t.produces.production == 5)
-    assert(t.produces.commerce == 6)
   }
 }
