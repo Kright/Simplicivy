@@ -30,6 +30,8 @@ class TerrainModifier(val name: String,
                       val additionalDefenseBonus: Int = 0,
                       val requirements: TerrainModifierRequirements) extends HasName {
 }
+
+
 class TerrainModifierRequirements {
   val bioms: mutable.Set[Biom] = new mutable.HashSet()
   var onlyHeight: Option[Int] = None
@@ -47,7 +49,7 @@ object TerrainModifier extends DilatedConverter[TerrainModifier] {
     new TerrainModifierRequirements {
       this.doLate {
         bioms ++= c.getStrings("bioms").map(gameRules.bioms(_))
-        onlyHeight = c.getOption[Int]("only height")
+        onlyHeight = c.getOption[Int]("onlyHeight")
         onLand = c.getOption[Boolean]("onLand").getOrElse(true)
         onWater = c.getOption[Boolean]("onWater").getOrElse(false)
         requireRiver = c.getOption[Boolean]("river").getOrElse(false)
