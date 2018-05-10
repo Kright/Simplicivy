@@ -23,13 +23,13 @@ import com.github.kright.worldmodel.units.GameUnitView
 import com.github.kright.worldmodel.worldmap.MapPosition
 import com.github.kright.worldmodel.city.CityView
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.{LandUpgradeTypeView, ResourceTypeView, RoadType, TerrainTypeView}
+import com.github.kright.worldmodel.gamerules._
 
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
   */
-trait MapCell extends MapPosition with LandModifiers {
+trait MapCell extends MapPosition with TerrainParams {
 
   def visibility: CellVisibility
 
@@ -44,16 +44,21 @@ trait MapCell extends MapPosition with LandModifiers {
 }
 
 
-trait LandModifiers {
-  def terrain: TerrainTypeView
+trait TerrainParams {
 
-  def resource: Option[ResourceTypeView]
+  def biom: Biom
+
+  def height: Int
+
+  def modifier: Option[TerrainModifier]
+
+  def resource: Option[ResourceType]
+
+  def landUpgrade: Option[LandUpgradeType]
+
+  def city: Option[CityView]
 
   def road: RoadType
 
-  def landUpgrade: Option[LandUpgradeTypeView]
-
   def hasPollution: Boolean
-
-  def city: Option[CityView]
 }

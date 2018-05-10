@@ -19,7 +19,7 @@
 
 package com.github.kright.worldmodel.units
 
-import com.github.kright.worldmodel.gamerules.{RoadType, TerrainTypeView}
+import com.github.kright.worldmodel.gamerules.{RoadType, TerrainModifier}
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 /**
@@ -48,4 +48,4 @@ case class BuildRoad(road: RoadType, remainingProgress: Int) extends WorkerTask
 
 case class BuildLandImprovement(improvement: RoadType, remainingProgress: Int) extends WorkerTask
 
-case class ChangeTerrainType(newTerrain: TerrainTypeView) extends WorkerTask
+case class ChangeTerrainModifier(newModifer: TerrainModifier) extends WorkerTask

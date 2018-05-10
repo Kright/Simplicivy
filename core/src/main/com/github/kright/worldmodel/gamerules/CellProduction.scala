@@ -24,18 +24,9 @@ import com.typesafe.config.Config
 /**
   * Created by Igor Slobodskov on 28 April 2018
   */
-trait CellProductionView {
-
-  def food: Int
-
-  def production: Int
-
-  def commerce: Int
-}
-
-class CellProduction(var food: Int,
-                     var production: Int,
-                     var commerce: Int) extends CellProductionView
+class CellProduction(var food: Int = 0,
+                     var production: Int = 0,
+                     var commerce: Int = 0)
 
 object CellProduction extends ConfigConverter[CellProduction] {
   override def convert(config: Config): CellProduction = {

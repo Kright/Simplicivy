@@ -67,7 +67,6 @@ object ConfigLoader {
         List.empty
       }
 
-
     def asLinked[T](implicit converter: DilatedConverter[T], gameRules: GameRules, dilatedExecutor: DilatedExecutor): T =
       catchErrors(converter.convert(config, gameRules, dilatedExecutor))
 
@@ -98,7 +97,7 @@ object ConfigLoader {
 
   implicit val converterCellProduction: ConfigConverter[CellProduction] = CellProduction
   implicit val converterBuildingEffectImpl: ConfigConverter[BuildingEffect] = BuildingEffect
-  implicit val converterTerrainTypeImpl: ConfigConverter[TerrainType] = TerrainType
+  implicit val converterBioms: ConfigConverter[Biom] = Biom
 
   implicit val converterResourceType: DilatedConverter[ResourceType] = ResourceType
   implicit val converterTechnologyDescriptionImpl: DilatedConverter[TechnologyDescription] = TechnologyDescription
@@ -108,6 +107,7 @@ object ConfigLoader {
   implicit val converterGameUnitType: DilatedConverter[GameUnitType] = GameUnitType
   implicit val convertNationImpl: DilatedConverter[Nation] = Nation
   implicit val convertGameUnitActionType: DilatedConverter[Seq[GameUnitActionType]] = GameUnitActionType
+  implicit val convertTerrainModifiers: DilatedConverter[TerrainModifier] = TerrainModifier
 
 
   implicit val getIntOption: ConfigGetOption[Int] = new ConfigGetOption[Int](_.getInt(_))

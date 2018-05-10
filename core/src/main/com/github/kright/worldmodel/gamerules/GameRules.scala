@@ -40,16 +40,19 @@ trait GameRules {
   // pure classes, don't hold links to other structures
   def technologies: GameRulesHolder[TechnologyDescriptionView]
 
-  def terrainTypes: GameRulesHolder[TerrainTypeView]
+  def bioms: GameRulesHolder[Biom]
+
+  // uses bioms
+  def terrainModifiers: GameRulesHolder[TerrainModifier]
 
   // uses techs and terrain types
-  def resources: GameRulesHolder[ResourceTypeView]
+  def resources: GameRulesHolder[ResourceType]
 
   // uses someself, resources and technologies
-  def cityBuildings: GameRulesHolder[CityBuildingTypeView]
+  def cityBuildings: GameRulesHolder[CityBuildingType]
 
   // uses terrain types
-  def langUpgradeTypes: GameRulesHolder[LandUpgradeTypeView]
+  def langUpgradeTypes: GameRulesHolder[LandUpgradeType]
 
   // uses tech, resources, cityBuildingTypes, and itself
   def unitTypes: GameRulesHolder[GameUnitTypeView]
@@ -72,12 +75,14 @@ class GameRulesHolder[T <: HasName] {
   def all: Seq[T] = lst
 }
 
+
 class GameRulesImpl() extends GameRules {
   var technologies: GameRulesHolder[TechnologyDescriptionView] = new GameRulesHolder()
-  var terrainTypes: GameRulesHolder[TerrainTypeView] = new GameRulesHolder()
-  var resources: GameRulesHolder[ResourceTypeView] = new GameRulesHolder()
-  var cityBuildings: GameRulesHolder[CityBuildingTypeView] = new GameRulesHolder()
-  var langUpgradeTypes: GameRulesHolder[LandUpgradeTypeView] = new GameRulesHolder()
+  var bioms: GameRulesHolder[Biom] = new GameRulesHolder()
+  var terrainModifiers: GameRulesHolder[TerrainModifier] = new GameRulesHolder()
+  var resources: GameRulesHolder[ResourceType] = new GameRulesHolder()
+  var cityBuildings: GameRulesHolder[CityBuildingType] = new GameRulesHolder()
+  var langUpgradeTypes: GameRulesHolder[LandUpgradeType] = new GameRulesHolder()
   var unitTypes: GameRulesHolder[GameUnitTypeView] = new GameRulesHolder()
   var nations: GameRulesHolder[NationView] = new GameRulesHolder()
 }
@@ -86,7 +91,6 @@ class GameRulesImpl() extends GameRules {
 object GameRules extends ConfigConverter[GameRulesImpl] {
 
   import ConfigLoader._
-  import scala.collection.JavaConverters._
 
   override def convert(config: Config): GameRulesImpl = {
 
@@ -94,7 +98,8 @@ object GameRules extends ConfigConverter[GameRulesImpl] {
     implicit val linking: DilatedExecutor = new DilatedExecutor()
 
     gameRules.technologies ++= config.getNamedEntries("technologies").map(_.asLinked[TechnologyDescription])
-    gameRules.terrainTypes ++= config.getNamedEntries("terrainTypes").map(_.as[TerrainType])
+    gameRules.bioms ++= config.getNamedEntries("bioms").map(_.as[Biom])
+    gameRules.terrainModifiers ++= config.getNamedEntries("terrainModifiers").map(_.asLinked[TerrainModifier])
     gameRules.resources ++= config.getNamedEntries("resources").map(_.asLinked[ResourceType])
     gameRules.cityBuildings ++= config.getNamedEntries("cityBuildings").map(_.asLinked[CityBuildingType])
     gameRules.langUpgradeTypes ++= config.getNamedEntries("landUpgrades").map(_.asLinked[LandUpgradeType])

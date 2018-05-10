@@ -32,11 +32,9 @@ import scala.collection.mutable.ArrayBuffer
 class MutableMapCell(val x: Int, val y: Int) extends MapCell {
   override def visibility: CellVisibility = Visible
 
-  var terrain: TerrainTypeView = _
-
   var city: Option[CityView] = None
 
-  var resource: Option[ResourceTypeView] = None
+  var resource: Option[ResourceType] = None
 
   val units: ArrayBuffer[GameUnitView] = new ArrayBuffer[GameUnitView]()
 
@@ -49,23 +47,31 @@ class MutableMapCell(val x: Int, val y: Int) extends MapCell {
 
   var road: RoadType = NoRoad
 
-  var landUpgrade: Option[LandUpgradeTypeView] = None
+  var landUpgrade: Option[LandUpgradeType] = None
 
   var hasPollution: Boolean = false
+
+  var biom: Biom = _
+
+  var modifier: Option[TerrainModifier] = None
+
+  var height: Int = 0
 }
 
 
 class ShadowedMapCell private(val x: Int, val y: Int,
-                              val terrain: TerrainTypeView,
                               val city: Option[CityView],
-                              val resource: Option[ResourceTypeView],
+                              val resource: Option[ResourceType],
                               val owner: Option[CountryLink],
                               val road: RoadType,
-                              val landUpgrade: Option[LandUpgradeTypeView],
-                              val hasPollution: Boolean) extends MapCell {
+                              val landUpgrade: Option[LandUpgradeType],
+                              val hasPollution: Boolean,
+                              val biom: Biom,
+                              val height: Int,
+                              val modifier: Option[TerrainModifier]) extends MapCell {
 
-  def this(c: MapCell) = this(c.x, c.y, c.terrain, c.city, c.resource, c.owner, c.road,
-    c.landUpgrade, c.hasPollution)
+  def this(c: MapCell) = this(c.x, c.y, c.city, c.resource, c.owner, c.road,
+    c.landUpgrade, c.hasPollution, c.biom, c.height, c.modifier)
 
   override def visibility: CellVisibility = Shadowed
 
@@ -85,11 +91,9 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
   private def throwException = throw new RuntimeException("this is Unknown cell!")
 
 
-  override def terrain: TerrainTypeView = throwException
-
   override def city: Option[CityView] = throwException
 
-  override def resource: Option[ResourceTypeView] = throwException
+  override def resource: Option[ResourceType] = throwException
 
   override def units: Seq[GameUnitView] = throwException
 
@@ -102,7 +106,13 @@ class UnknownMapCell(val x: Int, val y: Int) extends MapCell {
 
   override def road: RoadType = throwException
 
-  override def landUpgrade: Option[LandUpgradeTypeView] = throwException
+  override def landUpgrade: Option[LandUpgradeType] = throwException
 
   override def hasPollution: Boolean = throwException
+
+  override def biom: Biom = throwException
+
+  override def height: Int = throwException
+
+  override def modifier: Option[TerrainModifier] = throwException
 }

@@ -37,11 +37,7 @@ case object BuildCity extends GameUnitActionType
 
 case object Destroy extends GameUnitActionType
 
-case class Terraforming(var to: TerrainTypeView,
-                        moves: Int,
-                        requirement: CellActionRequirement) extends WorkerAction
-
-case class BuildingLandUpgrade(var upgrade: LandUpgradeTypeView,
+case class BuildingLandUpgrade(var upgrade: LandUpgradeType,
                                moves: Int,
                                requirement: CellActionRequirement) extends GameUnitActionType with WorkerAction
 
@@ -49,7 +45,7 @@ case class BuildRoad(moves: Int,
                      requirement: CellActionRequirement) extends WorkerAction
 
 
-class CellActionRequirement(var terrain: mutable.Set[TerrainTypeView] = new mutable.HashSet[TerrainTypeView](),
+class CellActionRequirement(var bioms: mutable.Set[Biom] = new mutable.HashSet(),
                             var technology: ArrayBuffer[TechnologyDescriptionView] = new ArrayBuffer[TechnologyDescriptionView]())
 
 object GameUnitActionType extends DilatedConverter[Seq[GameUnitActionType]] {
@@ -81,18 +77,6 @@ object GameUnitActionType extends DilatedConverter[Seq[GameUnitActionType]] {
       }
     }
 
-    all ++= config.getConfigs("terraforming").map { c =>
-      new Terraforming(
-        to = null, //late init
-        moves = c.getInt("moves"),
-        requirement = cellActionRequirement(c.getConfig("require"))
-      ) {
-        this.doLate {
-          to = gameRules.terrainTypes(c.getString("to"))
-        }
-      }
-    }
-
     all
   }
 
@@ -100,7 +84,7 @@ object GameUnitActionType extends DilatedConverter[Seq[GameUnitActionType]] {
   private def cellActionRequirement(cfg: Config)(implicit gameRules: GameRules, dilatedExecutor: DilatedExecutor): CellActionRequirement =
     new CellActionRequirement() {
       this.doLate {
-        terrain ++= cfg.getStrings("terrain").map(gameRules.terrainTypes(_))
+        bioms ++= cfg.getStrings("bioms").map(gameRules.bioms(_))
         technology ++= cfg.getStrings("technology").map(gameRules.technologies(_))
       }
     }
