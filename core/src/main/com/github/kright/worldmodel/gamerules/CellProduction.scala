@@ -26,16 +26,22 @@ import com.typesafe.config.Config
   */
 class CellProduction(var food: Int = 0,
                      var production: Int = 0,
-                     var commerce: Int = 0)
+                     var commerce: Int = 0,
+                     var foodMultiplier: Int = 1,
+                     var productionMultiplier: Int = 1,
+                     var commerceMultiplier: Int = 1)
 
 object CellProduction extends ConfigConverter[CellProduction] {
   override def convert(config: Config): CellProduction = {
     import ConfigLoader._
-    implicit def str2int(s: String) = config.getOption[Int](s).getOrElse(0)
+    implicit def str2int(pair: (String, Int)) = config.getOption[Int](pair._1).getOrElse(pair._2)
 
     new CellProduction(
-      food = "food",
-      production = "production",
-      commerce = "commerce")
+      food = "food" -> 0,
+      production = "production" -> 0,
+      commerce = "commerce" -> 0,
+      foodMultiplier = "foodMultiplier" -> 1,
+      productionMultiplier = "productionMultiplier" -> 1,
+      commerceMultiplier = "commerceMultiplier" -> 1)
   }
 }
