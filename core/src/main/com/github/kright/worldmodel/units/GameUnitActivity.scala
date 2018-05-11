@@ -54,7 +54,7 @@ sealed trait WorkerTask
 
 object WorkerTask {
 
-  // todo fix case when more than one worker do same task
+  // todo manage case when more than one worker do same task
 
   case class BuildRoad(road: RoadType, remainingProgress: Int) extends WorkerTask
 

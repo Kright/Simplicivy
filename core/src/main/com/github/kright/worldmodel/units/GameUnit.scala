@@ -21,14 +21,11 @@ package com.github.kright.worldmodel.units
 
 import com.github.kright.worldmodel.MapCell
 import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules._
+import com.github.kright.worldmodel.gamerules.{GameUnitTypeView, NoRoad, Railroad, Road}
 import com.github.kright.worldmodel.worldmap.{MapPosition, PathFinder, PlayerMapView}
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
-  * Created by Igor Slobodskov on 26 April 2018
-  *
+  * Created by Igor Slobodskov on 11 May 2018
   */
 trait GameUnitView extends MapPosition {
 
@@ -48,36 +45,6 @@ trait GameUnitView extends MapPosition {
   def possibleMoves(implicit playerMapView: PlayerMapView): collection.Set[MapCell]
 
   def possibleActions(implicit playerMapView: PlayerMapView): Seq[PlayerMapView]
-}
-
-trait GameUnitMilitaryView {
-  def exp: Int
-
-  def level: GameUnitLevel
-
-  def hp: Int
-
-  def maxHp: Int
-}
-
-
-trait GameUnitCarrierView {
-  def carried: Seq[GameUnitView]
-
-  def maxCarried: Int
-
-  def canBoardUnit(unit: GameUnitView): Boolean
-}
-
-
-class GameUnitCarrier(self: GameUnitView) extends GameUnitCarrierView {
-  val carried = new ArrayBuffer[GameUnitView]
-
-  override def maxCarried: Int = carried.size
-
-  /** can carry land unit of same country if not full*/
-  override def canBoardUnit(unit: GameUnitView): Boolean =
-    unit.owner == self.owner && carried.size < maxCarried && unit.unitType.landMoves.isDefined
 }
 
 
@@ -145,20 +112,4 @@ class GameUnit(val unitType: GameUnitTypeView, val owner: CountryLink, var x: In
   private def maxLandMoves = unitType.landMoves.map(_.moves).getOrElse(0)
 
   private def maxSeaMoves = unitType.seaMoves.map(_.moves).getOrElse(0)
-}
-
-class GameUnitMilitary(unit: GameUnit, startExp: Int) extends GameUnitMilitaryView {
-  private val unitType = unit.unitType
-
-  var exp: Int = startExp
-  var level: GameUnitLevel = findLevel()
-
-  def maxHp = level.maxHitPoints
-
-  var hp: Int = maxHp
-  var meleeAttacks: Int = unitType.meleeCombat.map(_.attacksPerMove).getOrElse(0)
-  var rangeAttacks: Int = unitType.rangeAttack.map(_.attacksPerMove).getOrElse(0)
-
-  private def findLevel(): GameUnitLevel =
-    unitType.levels.view.filter(exp >= _.requiredExperience).maxBy(_.requiredExperience)
 }
