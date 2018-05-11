@@ -59,3 +59,23 @@ object PathFinder {
     distances
   }
 }
+
+class PathFinder[T] private(val start: T,
+                            val maxDistance: Double,
+                            val distances: mutable.HashMap[T, Double],
+                            val movedFrom: mutable.HashMap[T, T]) {
+
+  /** get path to given cell */
+  def getPathTo(goal: T): Seq[T] = {
+    var list = List.empty[T]
+    var current: T = goal
+
+    while (current != start) {
+      list = current :: list
+      current = movedFrom(current)
+    }
+    list = current :: list
+
+    list
+  }
+}
