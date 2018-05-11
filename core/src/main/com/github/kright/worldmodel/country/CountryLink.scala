@@ -26,4 +26,5 @@ package com.github.kright.worldmodel.country
   */
 trait CountryLink {
   // may there would be view of current player for this country or something else
+  // todo overload equals method - compare actual countries
 }

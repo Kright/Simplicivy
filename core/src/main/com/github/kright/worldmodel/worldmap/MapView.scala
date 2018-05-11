@@ -99,6 +99,4 @@ trait MapView[+T <: MapCell] {
 
     arr
   }
-
-  def findPath(unit: Unit, to: MapPosition): Seq[T] = ??? //todo
 }
