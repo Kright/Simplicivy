@@ -36,7 +36,8 @@ object PathFinder {
   @inline
   def availableCells[T](getCost: T => Double,
                         getNeighbors: T => Seq[T],
-                        start: T, maxDistance: Double,
+                        start: T,
+                        maxDistance: Double,
                         eps: Double = 0.001): mutable.HashMap[T, Double] = {
     val distances = new mutable.HashMap[T, Double]()
     val unprocessed = new mutable.PriorityQueue[T]()(Ordering.by[T, Double](distances).reverse)
