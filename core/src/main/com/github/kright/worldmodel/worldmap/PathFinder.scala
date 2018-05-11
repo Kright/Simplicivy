@@ -21,8 +21,6 @@ package com.github.kright.worldmodel.worldmap
 
 import scala.collection.mutable
 
-//todo test it
-//todo may be priorities are wrong and need to be inverted
 object PathFinder {
 
   /**
@@ -38,9 +36,10 @@ object PathFinder {
   @inline
   def availableCells[T](getCost: T => Double,
                         getNeighbors: T => Seq[T],
-                        start: T, maxDistance: Double): mutable.HashMap[T, Double] = {
+                        start: T, maxDistance: Double,
+                        eps: Double = 0.001): mutable.HashMap[T, Double] = {
     val distances = new mutable.HashMap[T, Double]()
-    val unprocessed = new mutable.PriorityQueue[T]()(Ordering.by[T, Double](distances))
+    val unprocessed = new mutable.PriorityQueue[T]()(Ordering.by[T, Double](distances).reverse)
 
     distances(start) = 0
     unprocessed += start
@@ -48,7 +47,7 @@ object PathFinder {
     while (unprocessed.nonEmpty) {
       val nearest = unprocessed.dequeue()
       val dist = distances(nearest)
-      if (dist <= maxDistance) {
+      if (dist + eps < maxDistance) {
         getNeighbors(nearest).filterNot(distances.contains).foreach { n =>
           distances(n) = dist + getCost(n)
           unprocessed += n
