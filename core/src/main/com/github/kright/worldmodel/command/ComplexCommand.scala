@@ -37,11 +37,7 @@ class ComplexCommand(commands: Seq[Command]) extends Command {
 
     if (appendActions(gameWorld, finished)) {
       UndoCommand {
-        var allOk = true
-        for (undo <- finished.reverseIterator) {
-          allOk &&= undo.undo()
-        }
-        allOk
+        finished.reverseIterator.forall(_.undo())
       }
     } else {
       //undo all finished sub-commands
