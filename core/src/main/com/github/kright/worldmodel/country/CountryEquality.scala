@@ -20,10 +20,16 @@
 package com.github.kright.worldmodel.country
 
 /**
-  * Created by Igor Slobodskov on 26 April 2018
-  *
-  * interface for country view
+  * Created by Igor Slobodskov on 20 May 2018
   */
-class CountryLink(country: Country) extends CountryEquality {
-  override protected def asCountry: Country = country
+trait CountryEquality {
+  protected def asCountry: Country
+
+  override def equals(obj: Any): Boolean =
+    obj match {
+      case comp: CountryEquality => comp.asCountry.eq(asCountry)
+      case _ => false
+    }
+
+  override def hashCode(): Int = asCountry.hashCode()
 }

@@ -19,18 +19,27 @@
 
 package com.github.kright.worldmodel.country
 
-import com.github.kright.worldmodel.gamerules.{Nation, NationView}
+import com.github.kright.worldmodel.gamerules.Nation
 import com.github.kright.worldmodel.science.PlayerScience
 import com.github.kright.worldmodel.worldmap.PlayerMapView
+
+import scala.collection.mutable
 
 /**
   * Created by Igor Slobodskov on 05 May 2018
   */
-class Country(val map: PlayerMapView,
-              val nations: Nation,
-              val science: PlayerScience) {
+class Country(val uniqueId: Int,
+              val map: PlayerMapView,
+              val nation: Nation,
+              val science: PlayerScience) extends CountryEquality {
 
   var exists: Boolean = true // country may be defeated
+
+  val knownCountries = new mutable.HashSet[CountryLink]()
+
+  override protected def asCountry: Country = this
+
+  override def hashCode(): Int = uniqueId
 }
 
-//todo traits for "own country" and "country"
+//todo add traits for "own country" and "country"
