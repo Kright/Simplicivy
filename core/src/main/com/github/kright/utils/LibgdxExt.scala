@@ -20,6 +20,8 @@
 package com.github.kright.utils
 
 import com.badlogic.gdx.math.{Vector => LibgdxVector}
+import com.badlogic.gdx.utils.Timer
+import com.badlogic.gdx.utils.Timer.Task
 
 /**
   * Created by Igor Slobodskov on 27 April 2018
@@ -57,4 +59,10 @@ object LibgdxExt {
     def !=(v: Vec): Boolean = a != v
   }
 
+  def schedule(delaySeconds: Float)(action: => Unit): Unit =
+    Timer.schedule(new Task {
+      override def run(): Unit = {
+        action
+      }
+    }, delaySeconds)
 }

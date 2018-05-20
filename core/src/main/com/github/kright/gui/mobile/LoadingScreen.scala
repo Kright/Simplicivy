@@ -22,11 +22,11 @@ package com.github.kright.gui.mobile
 import com.badlogic.gdx.graphics.{GL20, Texture}
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.utils.Timer.Task
-import com.badlogic.gdx.utils.{Scaling, Timer}
+import com.badlogic.gdx.utils.{Scaling}
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.{Gdx, ScreenAdapter}
 import com.github.kright.MainGame
+import com.github.kright.utils.LibgdxExt
 
 /**
   * Created by Igor Slobodskov on 05 May 2018
@@ -43,9 +43,9 @@ class LoadingScreen extends ScreenAdapter {
     addActor(backgroundImg)
   }
 
-  Timer.schedule(new Task {
-    override def run(): Unit = MainGame.setScreen(new MainScreen())
-  }, 0.5f)
+  LibgdxExt.schedule(0.5f) {
+    MainGame.setScreen(new MainScreen())
+  }
 
   override def hide(): Unit = {
     Gdx.input.setInputProcessor(null)
