@@ -32,6 +32,17 @@ class GameWorld(val baseMap: SimpleMap) {
   val countries: ArrayBuffer[Country] = new ArrayBuffer[Country]()
 
   var stepsCount: Int = 0
+  var currentCountryNo: Int = 0
+
+  def getNextCountry(): Country = {
+    assert(countries.nonEmpty)
+    currentCountryNo += 1
+    if (currentCountryNo > countries.size) {
+      stepsCount += 1
+      currentCountryNo = 0
+    }
+    countries(currentCountryNo)
+  }
 }
 
 class PlayerEnvironment(private val world: GameWorld, private val country: Country) {
