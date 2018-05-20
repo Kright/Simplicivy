@@ -63,22 +63,9 @@ class PlayerMapView(private val simpleMap: SimpleMap,
     shadowed
   }
 
-  def openCellCommand(cell: MapPosition): Command = Command { gameWorld =>
-    val current = this (cell)
-    if (current.visibility == Visible) {
-      UndoCommand.empty
-    } else {
-      openCell(current)
-      UndoCommand {
-        this (current) = current
-        true
-      }
-    }
-  }
-
   def openCellCommand(cells: MapPosition*): Command = Command { gameWorld =>
     val oldCells = cells.map(apply)
-    val openedCells = cells.map(openCell)
+    oldCells.foreach(openCell)
 
     UndoCommand {
       oldCells.foreach { c =>
