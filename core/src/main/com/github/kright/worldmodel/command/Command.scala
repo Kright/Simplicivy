@@ -66,4 +66,6 @@ object UndoCommand {
   def apply(action: => Boolean): UndoCommand = new UndoCommand {
     override protected def undoCommand(): Boolean = action
   }
+
+  val empty = UndoCommand(true)
 }
