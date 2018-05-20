@@ -33,8 +33,6 @@ trait Command {
 
   def initiator: Country
 
-  def isValid(gameWorld: GameWorld): Boolean
-
   def doAction(gameWorld: GameWorld): CommandResult
 }
 
@@ -51,7 +49,7 @@ trait UndoCommand extends CommandResult {
   private var wasCalled = false
 
   /** return false if something gone wrong */
-  final def undo(gameWorld: GameWorld): Boolean = {
+  final def undo(): Boolean = {
     assert(!wasCalled)
 
     wasCalled = true
