@@ -20,7 +20,8 @@
 package com.github.kright.worldmodel.worldmap
 
 import com.github.kright.utils.Array2d
-import com.github.kright.worldmodel.MapCell
+import com.github.kright.worldmodel.{MapCell, Visible}
+import com.github.kright.worldmodel.command.{Command, UndoCommand}
 
 /**
   * Created by Igor Slobodskov on 26 April 2018
@@ -60,5 +61,30 @@ class PlayerMapView(private val simpleMap: SimpleMap,
     val shadowed = old.getShadowed()
     this (p) = shadowed
     shadowed
+  }
+
+  def openCellCommand(cell: MapPosition): Command = Command { gameWorld =>
+    val current = this (cell)
+    if (current.visibility == Visible) {
+      UndoCommand.empty
+    } else {
+      openCell(current)
+      UndoCommand {
+        this (current) = current
+        true
+      }
+    }
+  }
+
+  def openCellCommand(cells: MapPosition*): Command = Command { gameWorld =>
+    val oldCells = cells.map(apply)
+    val openedCells = cells.map(openCell)
+
+    UndoCommand {
+      oldCells.foreach { c =>
+        this (c) = c
+      }
+      true
+    }
   }
 }

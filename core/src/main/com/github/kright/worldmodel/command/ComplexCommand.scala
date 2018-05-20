@@ -30,8 +30,6 @@ import scala.collection.mutable.ArrayBuffer
 class ComplexCommand(commands: Seq[Command]) extends Command {
   assert(commands.nonEmpty)
 
-  val initiator: Country = commands.head.initiator
-
   override def doAction(gameWorld: GameWorld): CommandResult = {
     val finished = new ArrayBuffer[UndoCommand]()
 

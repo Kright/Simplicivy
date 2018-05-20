@@ -30,10 +30,13 @@ import com.github.kright.worldmodel.country.Country
   * Created by Igor Slobodskov on 20 May 2018
   */
 trait Command {
-
-  def initiator: Country
-
   def doAction(gameWorld: GameWorld): CommandResult
+}
+
+object Command {
+  def apply(func: GameWorld => CommandResult): Command = new Command {
+    override def doAction(gameWorld: GameWorld): CommandResult = func(gameWorld)
+  }
 }
 
 
