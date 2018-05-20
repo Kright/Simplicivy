@@ -43,8 +43,27 @@ sealed trait CommandResult
 
 case object CommandInvalid extends CommandResult
 
+/**
+  * may be called only once
+  */
 trait UndoCommand extends CommandResult {
 
+  private var wasCalled = false
+
   /** return false if something gone wrong */
-  def undo(gameWorld: GameWorld): Boolean
+  final def undo(gameWorld: GameWorld): Boolean = {
+    assert(!wasCalled)
+
+    wasCalled = true
+    undoCommand()
+  }
+
+  protected def undoCommand(): Boolean
+}
+
+object UndoCommand {
+
+  def apply(action: => Boolean): UndoCommand = new UndoCommand {
+    override protected def undoCommand(): Boolean = action
+  }
 }
