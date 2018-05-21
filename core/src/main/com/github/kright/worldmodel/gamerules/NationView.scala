@@ -36,6 +36,8 @@ trait NationView extends HasName {
 
   def startingTechs: Seq[TechnologyDescriptionView]
 
+  def cityNames: Seq[String]
+
   //  def extraGameUnits: Modification[GameUnitType]
   //
   //  def extraBuildings: Modification[CityBuildingType]
@@ -75,7 +77,8 @@ class NationFeatures(var moreFood: Boolean,
 
 class Nation(val name: String,
              var features: NationFeatures,
-             val startingTechs: ArrayBuffer[TechnologyDescriptionView] = new ArrayBuffer[TechnologyDescriptionView]()) extends NationView
+             val startingTechs: ArrayBuffer[TechnologyDescriptionView] = new ArrayBuffer[TechnologyDescriptionView](),
+             val cityNames: ArrayBuffer[String] = new ArrayBuffer[String]()) extends NationView
 
 object Nation extends DilatedConverter[Nation] {
 
@@ -87,6 +90,7 @@ object Nation extends DilatedConverter[Nation] {
       features = nationFeatures(cfg)) {
       this.doLate {
         startingTechs ++= cfg.getStrings("startTechnologies").map(gameRules.technologies(_))
+        cityNames ++= cfg.getStrings("cityNames")
       }
     }
   }

@@ -226,12 +226,14 @@ class ConfigLoaderBigTest extends FunSuite {
       |           moreCommerce = true
       |        }
       |        startingTechs = simple
+      |        cityNames = ["London", "York"]
       |     }
       |     Roma {
       |       features {
       |         military = true
       |         landExpansion = true
       |       }
+      |       cityNames = ["Roma", "Pompeii"]
       |     }
       |     Greece {
       |       features {
@@ -239,6 +241,7 @@ class ConfigLoaderBigTest extends FunSuite {
       |         scientific = true
       |       }
       |       startingTechs = [simple, peaceful]
+      |       cityNames = ["Athens", "Thebes"]
       |     }
       |   }
       |}
@@ -262,7 +265,9 @@ class ConfigLoaderBigTest extends FunSuite {
     assert(rules.langUpgradeTypes.all.size == 2)
     assert(rules.cityBuildings.all.size == 4)
     assert(rules.resources.all.size == 3)
+    assert(rules.nations("Roma").cityNames.size == 2)
 
     assert(rules.technologies("military").requiredTechnologies(0).name == "simple")
+    assert(rules.nations("Roma").cityNames(0) == "Roma")
   }
 }
