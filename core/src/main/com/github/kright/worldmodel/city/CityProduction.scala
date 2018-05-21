@@ -19,18 +19,23 @@
 
 package com.github.kright.worldmodel.city
 
-import com.github.kright.worldmodel.worldmap.MapPosition
-
 /**
-  * Created by Igor Slobodskov on 27 April 2018
+  * Created by Igor Slobodskov on 22 May 2018
   */
-trait CityBuilding
+trait CityProductionView {
+  def production: Int
 
-trait CityView extends MapPosition {
+  def food: Int
 
-  def name: String
+  def commerce: Int
 
-  def citizensCount: Int
+  def culture: Int
 
-  def owner: CityView
+  def science: Int
 }
+
+class CityProduction(var production: Int,
+                     var food: Int,
+                     var commerce: Int,
+                     var culture: Int,
+                     var science: Int) extends CityProductionView

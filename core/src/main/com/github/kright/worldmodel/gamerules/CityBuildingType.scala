@@ -53,15 +53,28 @@ trait BuildingEffectView {
   def pollution: Int
 }
 
-class BuildingEffect(var maintenance: Int,
-                     var happiness: Int,
-                     var culture: Int,
-                     var taxBonus: Int,
-                     var researchBonus: Int,
-                     var productionBonus: Int,
-                     var defenceBonus: Int,
-                     var corruptionDecrease: Int,
-                     var pollution: Int) extends BuildingEffectView
+class BuildingEffect(var maintenance: Int = 0,
+                     var happiness: Int = 0,
+                     var culture: Int = 0,
+                     var taxBonus: Int = 0,
+                     var researchBonus: Int = 0,
+                     var productionBonus: Int = 0,
+                     var defenceBonus: Int = 0,
+                     var corruptionDecrease: Int = 0,
+                     var pollution: Int = 0) extends BuildingEffectView {
+
+  def +=(add: BuildingEffectView): Unit = {
+    maintenance += add.maintenance
+    happiness += add.happiness
+    culture += add.culture
+    taxBonus += taxBonus
+    researchBonus += researchBonus
+    productionBonus += productionBonus
+    defenceBonus += defenceBonus
+    corruptionDecrease += corruptionDecrease
+    pollution += pollution
+  }
+}
 
 
 object CityBuildingType extends DilatedConverter[CityBuildingType] {
