@@ -20,7 +20,6 @@
 package com.github.kright.worldmodel.command
 
 import com.github.kright.worldmodel.GameWorld
-import com.github.kright.worldmodel.country.Country
 
 import scala.collection.mutable.ArrayBuffer
 

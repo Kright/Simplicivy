@@ -20,7 +20,6 @@
 package com.github.kright.worldmodel.command
 
 import com.github.kright.worldmodel.GameWorld
-import com.github.kright.worldmodel.country.Country
 
 /**
   * Game commands like "move unit", "build city", "declare war" and etc
