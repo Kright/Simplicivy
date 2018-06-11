@@ -17,30 +17,16 @@
  *     along with Simplicivy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.kright.worldmodel.country
+package com.github.kright.worldmodel.city
 
-import com.github.kright.worldmodel.gamerules.Nation
-import com.github.kright.worldmodel.science.PlayerScience
-import com.github.kright.worldmodel.worldmap.PlayerMapView
-
-import scala.collection.mutable
+import com.github.kright.worldmodel.gamerules.ResourceType
 
 /**
-  * Created by Igor Slobodskov on 05 May 2018
+  * Created by Igor Slobodskov on 11 June 2018
   */
-class Country(val uniqueId: Int,
-              val map: PlayerMapView,
-              val nation: Nation,
-              val science: PlayerScience,
-              var gold: Int) extends CountryEquality {
+class CityResources {
 
-  var exists: Boolean = true // country may be defeated
+  def getCount(c: ResourceType): Int = ???
 
-  val knownCountries = new mutable.HashSet[CountryLink]()
-
-  override protected def asCountry: Country = this
-
-  override def hashCode(): Int = uniqueId
+  def contains(c: ResourceType): Boolean = getCount(c) > 0
 }
-
-//todo add traits for "own country" and "country"

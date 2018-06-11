@@ -37,6 +37,9 @@ trait MapPosition extends Position {
 
   /* return itself */
   override def asMapPosition(implicit topology: MapTopology): MapPosition = this
+
+  def distanceTo(p: MapPosition)(implicit topology: MapTopology): Int =
+    topology.distance(x, y, p.x, p.y)
 }
 
 private class MapPositionImpl(val x: Int, val y: Int) extends MapPosition

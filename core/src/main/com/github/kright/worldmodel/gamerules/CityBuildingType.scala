@@ -50,8 +50,12 @@ trait BuildingEffectView {
   def corruptionDecrease: Int
 
 
+  def decreasedFoodToGrowth: Boolean
+
+
   def pollution: Int
 }
+
 
 class BuildingEffect(var maintenance: Int = 0,
                      var happiness: Int = 0,
@@ -61,18 +65,35 @@ class BuildingEffect(var maintenance: Int = 0,
                      var productionBonus: Int = 0,
                      var defenceBonus: Int = 0,
                      var corruptionDecrease: Int = 0,
+                     var decreasedFoodToGrowth: Boolean = false,
                      var pollution: Int = 0) extends BuildingEffectView {
 
-  def +=(add: BuildingEffectView): Unit = {
+  def +=(add: BuildingEffectView): BuildingEffect = {
     maintenance += add.maintenance
     happiness += add.happiness
     culture += add.culture
-    taxBonus += taxBonus
-    researchBonus += researchBonus
-    productionBonus += productionBonus
-    defenceBonus += defenceBonus
-    corruptionDecrease += corruptionDecrease
-    pollution += pollution
+    taxBonus += add.taxBonus
+    researchBonus += add.researchBonus
+    productionBonus += add.productionBonus
+    defenceBonus += add.defenceBonus
+    corruptionDecrease += add.corruptionDecrease
+    decreasedFoodToGrowth ||= add.decreasedFoodToGrowth
+    pollution += add.pollution
+
+    this
+  }
+
+  def reset(): Unit = {
+    maintenance = 0
+    happiness = 0
+    culture = 0
+    taxBonus = 0
+    researchBonus = 0
+    productionBonus = 0
+    defenceBonus = 0
+    corruptionDecrease = 0
+    decreasedFoodToGrowth = false
+    pollution = 0
   }
 }
 
@@ -91,6 +112,8 @@ object CityBuildingType extends DilatedConverter[CityBuildingType] {
 
 object BuildingEffect extends ConfigConverter[BuildingEffect] {
   override def convert(config: Config): BuildingEffect = {
+    import ConfigLoader._
+
     implicit def parseOr0(s: String): Int = if (config.hasPath(s)) config.getInt(s) else 0
 
     new BuildingEffect(
@@ -102,6 +125,8 @@ object BuildingEffect extends ConfigConverter[BuildingEffect] {
       "productionBonus",
       "defenceBonus",
       "corruptionDecrease",
-      "pollution")
+      config.getOption[Boolean]("decreasedFoodToGrowth").getOrElse(false),
+      "pollution"
+    )
   }
 }

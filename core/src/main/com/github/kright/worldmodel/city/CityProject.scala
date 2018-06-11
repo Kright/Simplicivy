@@ -28,18 +28,28 @@ sealed trait CityProject {
   def progress: Int
 
   def totalCost: Int
+
+  def addProgress(additionalProgress: Int): CityProject
 }
 
 object CityProject {
 
-  case class ProduceUnit(progress: Int, totalCost: Int, unit: GameUnitType) extends CityProject
-
-  case class AddBuilding(progress: Int, totalCost: Int, building: CityBuildingType) extends CityProject
-
-  case object Empty extends CityProject {
-    override def progress: Int = 0
-
-    override def totalCost: Int = 0
+  case class ProduceUnit(progress: Int, totalCost: Int, unit: GameUnitType) extends CityProject {
+    override def addProgress(additionalProgress: Int): CityProject =
+      copy(progress = progress + additionalProgress)
   }
 
+  case class AddBuilding(progress: Int, totalCost: Int, building: CityBuildingType) extends CityProject {
+    override def addProgress(additionalProgress: Int): CityProject =
+      copy(progress = progress + additionalProgress)
+  }
+
+  case class Empty(progress: Int) extends CityProject {
+    override def totalCost: Int = 0
+
+    override def addProgress(additionalProgress: Int): CityProject =
+      copy(progress = progress + additionalProgress)
+  }
+
+  val empty = Empty(0)
 }

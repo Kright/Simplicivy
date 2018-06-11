@@ -34,8 +34,8 @@ trait CityProductionView {
   def science: Int
 }
 
-class CityProduction(var production: Int,
-                     var food: Int,
-                     var commerce: Int,
-                     var culture: Int,
-                     var science: Int) extends CityProductionView
+class CityProduction(var production: Int = 0,
+                     var food: Int = 0,
+                     var commerce: Int = 0,
+                     var culture: Int = 0,
+                     var science: Int = 0) extends CityProductionView

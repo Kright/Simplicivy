@@ -20,8 +20,8 @@
 package com.github.kright.worldmodel.city
 
 import com.github.kright.worldmodel.MapCell
-import com.github.kright.worldmodel.country.CountryLink
-import com.github.kright.worldmodel.gamerules.{BuildingEffectView, CityBuildingType, ResourceType}
+import com.github.kright.worldmodel.country.Country
+import com.github.kright.worldmodel.utils.NewTurnListener
 import com.github.kright.worldmodel.worldmap.MapPosition
 
 
@@ -32,30 +32,88 @@ trait CityView extends MapPosition {
 
   def name: String
 
-  def citizensCount: Int
+  def citizens: CityCitizens
+
+  def buildings: CityBuildings
+
+  def cells: CityCells
 
   def totalCulture: Int
 
-  def owner: CountryLink
+  def owner: Country
 }
 
+class City(val center: MapCell,
+           var name: String,
+           var owner: Country) extends CityView with NewTurnListener {
 
-trait CityOwnerView extends CityView {
+  val citizens = new CityCitizens(this)
+  val buildings = new CityBuildings(this)
+  val cells = new CityCells(this)
+  val resources = new CityResources()
 
-  def name_=(newName: String)
+  var totalCulture: Int = 0
+  var totalFood: Int = 0
 
-  def workingCitizens: Seq[MapCell]
+  var project: CityProject = CityProject.Empty(0)
+
+  def calculateProduction(): CityProductionView = {
+    ???
+    //todo
+  }
 
 
-  def buildings: Seq[CityBuildingType]
+  override def newTurn(): Unit = {
+    val prod = calculateProduction()
 
-  def hasBuilding(b: CityBuildingType): Boolean
+    addCulture(prod.culture)
+    addFood(prod.food)
+    addProduction(prod.production)
+    owner.science.addSciencePoints(prod.science)
+    owner.gold += prod.commerce
 
-  def buildingEffects: BuildingEffectView
+    project = project.addProgress(prod.production)
+    if (project.progress > project.totalCost) {
+      project match {
+        case addB: CityProject.AddBuilding =>
+      }
+    }
 
-  def resourceCount(resource: ResourceType): Int
+    project match {
+      case e: CityProject.Empty => project = CityProject.empty
+      case _ =>
+    }
+  }
 
-  def production: CityProductionView
+  override def turnFinished(): Unit = {
+  }
 
-  def project: CityProject
+  private def addCulture(culture: Int): Unit = {
+    totalCulture += culture
+    //todo territory growing
+  }
+
+  private def addFood(food: Int): Unit = {
+    totalFood += food
+    while (totalFood >= maxFood) {
+      totalFood -= maxFood
+      citizens.addCitizen()
+    }
+
+    if (food < 0) {
+      //starvation
+      totalFood = 0
+      citizens.removeCitizen()
+    }
+  }
+
+  private def addProduction(add: Int): Unit = {
+    project = project.addProgress(add)
+  }
+
+  def maxFood: Int = if (buildings.effect.decreasedFoodToGrowth) 10 else 20
+
+  override def x: Int = center.x
+
+  override def y: Int = center.y
 }
